@@ -6,7 +6,7 @@ export type Theme = 'light' | 'dark';
 export interface VFSItem {
   id: string;
   name: string;
-  type: 'file' | 'folder';
+  type: 'file' | 'folder' | 'drive';
   content?: string;
   parentId: string | null;
   lastModified: number;
@@ -50,11 +50,8 @@ interface OSState {
   windows: AppWindow[];
   activeWindowId: string | null;
   notifications: Notification[];
-  
-  // Virtual File System
   fs: VFSItem[];
   
-  // Actions
   completeBoot: () => void;
   login: () => void;
   logout: () => void;
@@ -75,12 +72,8 @@ interface OSState {
   maximizeWindow: (id: string) => void;
   focusWindow: (id: string) => void;
   updateWindowDimensions: (id: string, x: number, y: number, width?: number | string, height?: number | string) => void;
-
-  // Notification Actions
   addNotification: (notif: Omit<Notification, 'id' | 'time'>) => void;
   removeNotification: (id: string) => void;
-
-  // FS Actions
   createItem: (item: Omit<VFSItem, 'id' | 'lastModified'>) => void;
   deleteItem: (id: string) => void;
   updateFileContent: (id: string, content: string) => void;
@@ -88,10 +81,12 @@ interface OSState {
 }
 
 const DEFAULT_FS: VFSItem[] = [
-  { id: 'root-docs', name: 'Documents', type: 'folder', parentId: null, lastModified: Date.now() },
-  { id: 'root-pics', name: 'Pictures', type: 'folder', parentId: null, lastModified: Date.now() },
-  { id: 'root-down', name: 'Downloads', type: 'folder', parentId: null, lastModified: Date.now() },
-  { id: 'welcome-txt', name: 'Welcome.txt', type: 'file', content: 'Welcome to Windows 12!\n\nThis is a real virtual file system.', parentId: 'root-docs', lastModified: Date.now() },
+  { id: 'drive-c', name: 'Local Disk (C:)', type: 'drive', parentId: null, lastModified: Date.now() },
+  { id: 'drive-d', name: 'Data (D:)', type: 'drive', parentId: null, lastModified: Date.now() },
+  { id: 'root-docs', name: 'Documents', type: 'folder', parentId: 'drive-c', lastModified: Date.now() },
+  { id: 'root-pics', name: 'Pictures', type: 'folder', parentId: 'drive-c', lastModified: Date.now() },
+  { id: 'root-down', name: 'Downloads', type: 'folder', parentId: 'drive-c', lastModified: Date.now() },
+  { id: 'welcome-txt', name: 'Welcome.txt', type: 'file', content: 'Welcome to Windows 12!\n\nExploitez la puissance de l\'IA et du VFS.', parentId: 'root-docs', lastModified: Date.now() },
 ];
 
 export const useOSStore = create<OSState>()(
@@ -224,7 +219,7 @@ export const useOSStore = create<OSState>()(
       }))
     }),
     {
-      name: 'windows12-storage-v4',
+      name: 'windows12-storage-v5',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ 
         theme: state.theme, 

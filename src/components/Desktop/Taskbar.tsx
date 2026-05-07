@@ -31,10 +31,10 @@ export default function Taskbar({ toggleStart, isStartOpen }: TaskbarProps) {
     }
   };
 
-  const handleAppClick = (id: string, title: string) => {
+  const handleAppClick = (id: string, title: string, icon: string) => {
     const win = windows.find(w => w.id === id);
     if (!win) {
-      openWindow(id, title);
+      openWindow(id, title, icon);
     } else if (win.id === activeWindowId && !win.isMinimized) {
       minimizeWindow(id);
     } else {
@@ -43,10 +43,10 @@ export default function Taskbar({ toggleStart, isStartOpen }: TaskbarProps) {
   };
 
   const pinnedApps = [
-    { id: 'browser', title: 'Edge', icon: <Globe size={24} color="#4285F4" /> },
-    { id: 'explorer', title: 'Files', icon: <Folder size={24} color="#ffca28" fill="#ffca28" /> },
-    { id: 'settings', title: 'Settings', icon: <Settings size={24} /> },
-    { id: 'weather', title: 'Weather', icon: <Cloud size={24} color="#00a8ff" /> },
+    { id: 'browser', title: 'Edge', icon: 'https://upload.wikimedia.org/wikipedia/commons/f/f6/Microsoft_Edge_logo_%282019%29.svg' },
+    { id: 'explorer', title: 'Files', icon: 'https://upload.wikimedia.org/wikipedia/commons/a/af/Windows_11_File_Explorer_Icon.svg' },
+    { id: 'settings', title: 'Settings', icon: 'https://upload.wikimedia.org/wikipedia/commons/e/ed/Windows_Settings_icon.svg' },
+    { id: 'weather', title: 'Weather', icon: 'https://upload.wikimedia.org/wikipedia/commons/1/16/Windows_11_Weather_icon.svg' },
   ];
 
   return (
@@ -58,9 +58,9 @@ export default function Taskbar({ toggleStart, isStartOpen }: TaskbarProps) {
             e.stopPropagation();
             toggleStart();
           }}
-          title="Start"
+          title="Démarrer"
         >
-          <Grid size={24} color="var(--accent-color)" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/c/c2/Windows_logo_-_2021.svg" style={{ width: '22px', height: '22px' }} alt="Start" />
         </button>
       </div>
 
@@ -69,10 +69,10 @@ export default function Taskbar({ toggleStart, isStartOpen }: TaskbarProps) {
           <button 
             key={app.id} 
             className={clsx('taskbar-btn', { active: activeWindowId === app.id && !windows.find(w => w.id === app.id)?.isMinimized })} 
-            onClick={() => handleAppClick(app.id, app.title)} 
+            onClick={() => handleAppClick(app.id, app.title, app.icon)} 
             title={app.title}
           >
-            {app.icon}
+            <img src={app.icon} style={{ width: '26px', height: '26px' }} alt={app.title} />
           </button>
         ))}
 
@@ -82,24 +82,24 @@ export default function Taskbar({ toggleStart, isStartOpen }: TaskbarProps) {
             <button 
               key={win.id}
               className={clsx('taskbar-btn', { active: activeWindowId === win.id && !win.isMinimized })}
-              onClick={() => handleAppClick(win.id, win.title)}
+              onClick={() => handleAppClick(win.id, win.title, win.icon || '')}
               title={win.title}
             >
               <div className="active-dot" />
-              <div style={{ width: '20px', height: '20px', background: 'var(--accent-color)', borderRadius: '4px', opacity: 0.8 }} />
+              {win.icon ? <img src={win.icon} style={{ width: '26px', height: '26px' }} alt={win.title} /> : <div style={{ width: '20px', height: '20px', background: 'var(--accent-color)', borderRadius: '4px', opacity: 0.8 }} />}
             </button>
           );
         })}
       </div>
 
       <div className="taskbar-tray">
-        <button className="tray-icon-btn" onClick={toggleFullscreen} title="Toggle Fullscreen">
+        <button className="tray-icon-btn" onClick={toggleFullscreen} title="Plein Écran">
           {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
         </button>
         <button 
           className="tray-icon-btn" 
           onClick={(e) => { e.stopPropagation(); toggleActionCenter(); }} 
-          title="Quick Settings"
+          title="Réglages rapides"
           style={{ display: 'flex', gap: '6px', alignItems: 'center' }}
         >
           <Wifi size={14} />
