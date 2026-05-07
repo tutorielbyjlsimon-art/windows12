@@ -1,8 +1,12 @@
 import { useOSStore } from '../../../store/useOSStore';
-import { Monitor, Palette, Info, ShieldCheck } from 'lucide-react';
+import { Monitor, Palette, ShieldCheck, MousePointer } from 'lucide-react';
 
 export default function SettingsMock() {
-  const { theme, toggleTheme, wallpaper, setWallpaper } = useOSStore();
+  const { 
+    theme, toggleTheme, wallpaper, setWallpaper, 
+    accentColor, setAccentColor, transparency, setTransparency,
+    showVirtualCursor, toggleVirtualCursor, isMobile
+  } = useOSStore();
 
   const wallpapers = [
     { name: 'Abstract Purple', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop' },
@@ -11,23 +15,25 @@ export default function SettingsMock() {
     { name: 'Cyberpunk City', url: 'https://images.unsplash.com/photo-1519608487953-e999c86e7455?q=80&w=2670&auto=format&fit=crop' },
   ];
 
+  const colors = ['#0078d4', '#4cc2ff', '#00cc6a', '#ffb900', '#d83b01', '#e81123', '#b4009e', '#5c2d91'];
+
   return (
     <div style={{ display: 'flex', height: '100%', color: 'var(--text-color)' }}>
       {/* Sidebar */}
       <div style={{ width: '240px', background: 'rgba(255,255,255,0.05)', borderRight: '1px solid var(--glass-border)', padding: '20px' }}>
         <h2 style={{ fontSize: '18px', marginBottom: '24px' }}>Settings</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <button style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', borderRadius: '8px', background: 'var(--hover-bg)', border: 'none', color: 'inherit', textAlign: 'left', cursor: 'pointer' }}>
+          <button className="settings-nav-btn active">
             <Palette size={18} /> Personalization
           </button>
-          <button style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', borderRadius: '8px', background: 'transparent', border: 'none', color: 'inherit', textAlign: 'left', cursor: 'pointer', opacity: 0.7 }}>
+          <button className="settings-nav-btn">
             <Monitor size={18} /> System
           </button>
-          <button style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', borderRadius: '8px', background: 'transparent', border: 'none', color: 'inherit', textAlign: 'left', cursor: 'pointer', opacity: 0.7 }}>
-            <ShieldCheck size={18} /> Privacy & Security
+          <button className="settings-nav-btn">
+            <MousePointer size={18} /> Devices & Input
           </button>
-          <button style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', borderRadius: '8px', background: 'transparent', border: 'none', color: 'inherit', textAlign: 'left', cursor: 'pointer', opacity: 0.7 }}>
-            <Info size={18} /> About
+          <button className="settings-nav-btn">
+            <ShieldCheck size={18} /> Privacy
           </button>
         </div>
       </div>
@@ -36,46 +42,92 @@ export default function SettingsMock() {
       <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
         <h1 style={{ fontSize: '28px', marginBottom: '32px' }}>Personalization</h1>
         
-        <section style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontSize: '16px', marginBottom: '16px', opacity: 0.8 }}>Theme</h3>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
+        {/* Theme Section */}
+        <section className="settings-section">
+          <h3>System Theme</h3>
+          <div className="settings-row">
             <div>
-              <p style={{ fontWeight: 500 }}>System Theme</p>
-              <p style={{ fontSize: '13px', opacity: 0.6 }}>Current: {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</p>
+              <p style={{ fontWeight: 500 }}>Light/Dark Mode</p>
+              <p style={{ fontSize: '12px', opacity: 0.6 }}>Current: {theme}</p>
             </div>
-            <button 
-              onClick={toggleTheme}
-              style={{
-                padding: '8px 24px', background: 'var(--accent-color)', color: 'white',
-                border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 500,
-                boxShadow: '0 4px 12px rgba(0, 120, 212, 0.3)'
-              }}
-            >
-              Switch to {theme === 'dark' ? 'Light' : 'Dark'}
+            <button onClick={toggleTheme} className="settings-btn">Switch Theme</button>
+          </div>
+        </section>
+
+        {/* Accent Color Section */}
+        <section className="settings-section">
+          <h3>Accent Color</h3>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '10px' }}>
+            {colors.map(c => (
+              <button 
+                key={c}
+                onClick={() => setAccentColor(c)}
+                style={{
+                  width: '32px', height: '32px', borderRadius: '50%', background: c,
+                  border: accentColor === c ? '3px solid white' : 'none',
+                  cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                }}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Transparency Section */}
+        <section className="settings-section">
+          <h3>Transparency Effect</h3>
+          <div className="settings-row">
+            <input 
+              type="range" min="0.1" max="1" step="0.1" 
+              value={transparency} 
+              onChange={(e) => setTransparency(parseFloat(e.target.value))}
+              style={{ flex: 1, marginRight: '20px' }}
+            />
+            <span>{Math.round(transparency * 100)}%</span>
+          </div>
+        </section>
+
+        {/* Mobile / Mouse Section */}
+        <section className="settings-section">
+          <h3>Interaction</h3>
+          <div className="settings-row">
+            <div>
+              <p style={{ fontWeight: 500 }}>Virtual Cursor</p>
+              <p style={{ fontSize: '12px', opacity: 0.6 }}>{isMobile ? "Recommandé pour votre appareil mobile" : "Optionnel pour ordinateur"}</p>
+            </div>
+            <button onClick={toggleVirtualCursor} className="settings-btn">
+              {showVirtualCursor ? "Désactiver" : "Activer"}
             </button>
           </div>
         </section>
 
-        <section>
-          <h3 style={{ fontSize: '16px', marginBottom: '16px', opacity: 0.8 }}>Desktop Wallpaper</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+        {/* Wallpaper Section */}
+        <section className="settings-section">
+          <h3>Wallpaper</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginTop: '10px' }}>
             {wallpapers.map(wp => (
               <div 
                 key={wp.url}
                 onClick={() => setWallpaper(wp.url)}
-                style={{
-                  cursor: 'pointer', borderRadius: '12px', overflow: 'hidden', 
-                  border: `3px solid ${wallpaper === wp.url ? 'var(--accent-color)' : 'transparent'}`,
-                  transition: 'all 0.2s',
-                  boxShadow: wallpaper === wp.url ? '0 8px 20px rgba(0, 120, 212, 0.2)' : 'none'
-                }}
+                className={`wallpaper-card ${wallpaper === wp.url ? 'active' : ''}`}
               >
-                <div style={{ height: '120px', background: `url(${wp.url}) center/cover` }} />
-                <div style={{ padding: '10px', fontSize: '13px', background: 'rgba(255,255,255,0.05)' }}>{wp.name}</div>
+                <div style={{ height: '100px', background: `url(${wp.url}) center/cover` }} />
+                <div className="label">{wp.name}</div>
               </div>
             ))}
           </div>
         </section>
+
+        <style>{`
+          .settings-section { margin-bottom: 40px; }
+          .settings-section h3 { font-size: 14px; margin-bottom: 16px; opacity: 0.7; text-transform: uppercase; }
+          .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(255,255,255,0.05); borderRadius: 12px; border: 1px solid var(--glass-border); }
+          .settings-btn { padding: 8px 16px; background: var(--accent-color); color: white; border: none; borderRadius: 8px; cursor: pointer; font-weight: 500; }
+          .settings-nav-btn { display: flex; alignItems: center; gap: 12px; padding: 12px; borderRadius: 8px; background: transparent; border: none; color: inherit; textAlign: left; cursor: pointer; width: 100%; opacity: 0.7; transition: all 0.2s; }
+          .settings-nav-btn.active { background: var(--hover-bg); opacity: 1; font-weight: 600; }
+          .wallpaper-card { cursor: pointer; borderRadius: 12px; overflow: hidden; border: 2px solid transparent; transition: all 0.2s; }
+          .wallpaper-card.active { border-color: var(--accent-color); }
+          .wallpaper-card .label { padding: 8px; font-size: 12px; background: rgba(255,255,255,0.05); }
+        `}</style>
       </div>
     </div>
   );

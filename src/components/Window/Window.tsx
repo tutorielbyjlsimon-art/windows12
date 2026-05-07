@@ -2,12 +2,14 @@ import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useOSStore } from '../../store/useOSStore';
 import type { AppWindow } from '../../store/useOSStore';
-import { Minus, Square, X, Globe, Settings, Cloud, Terminal, Calculator, FileText } from 'lucide-react';
+import { Minus, Square, X, Globe, Settings, Cloud, Terminal, Calculator, FileText, Folder } from 'lucide-react';
 import BrowserMock from './Apps/BrowserMock';
 import SettingsMock from './Apps/SettingsMock';
 import WeatherMock from './Apps/WeatherMock';
 import TerminalMock from './Apps/TerminalMock';
 import CalculatorMock from './Apps/CalculatorMock';
+import FileExplorerMock from './Apps/FileExplorerMock';
+import NotepadMock from './Apps/NotepadMock';
 import ErrorBoundary from '../ErrorBoundary';
 import './Window.css';
 
@@ -35,6 +37,7 @@ export default function Window({ window: win }: WindowProps) {
       case 'terminal': return <Terminal size={16} />;
       case 'calculator': return <Calculator size={16} color="#f0932b" />;
       case 'notepad': return <FileText size={16} color="#48dbfb" />;
+      case 'explorer': return <Folder size={16} color="#ffca28" fill="#ffca28" />;
       default: return null;
     }
   };
@@ -46,6 +49,8 @@ export default function Window({ window: win }: WindowProps) {
       case 'weather': return <WeatherMock />;
       case 'terminal': return <TerminalMock />;
       case 'calculator': return <CalculatorMock />;
+      case 'explorer': return <FileExplorerMock />;
+      case 'notepad': return <NotepadMock />;
       default:
         return (
           <div className="window-content-inner">

@@ -20,6 +20,10 @@ interface OSState {
   isLoggedIn: boolean;
   theme: Theme;
   wallpaper: string;
+  accentColor: string;
+  transparency: number;
+  showVirtualCursor: boolean;
+  isMobile: boolean;
   windows: AppWindow[];
   activeWindowId: string | null;
   
@@ -29,6 +33,10 @@ interface OSState {
   logout: () => void;
   toggleTheme: () => void;
   setWallpaper: (url: string) => void;
+  setAccentColor: (color: string) => void;
+  setTransparency: (val: number) => void;
+  toggleVirtualCursor: () => void;
+  setIsMobile: (val: boolean) => void;
   openWindow: (id: string, title: string, icon?: string) => void;
   closeWindow: (id: string) => void;
   minimizeWindow: (id: string) => void;
@@ -44,6 +52,10 @@ export const useOSStore = create<OSState>()(
       isLoggedIn: false,
       theme: 'dark',
       wallpaper: 'https://images.unsplash.com/photo-1477346611705-65d1883cee1e?auto=format&fit=crop&q=80&w=2000',
+      accentColor: '#0078d4',
+      transparency: 0.8,
+      showVirtualCursor: false,
+      isMobile: false,
       windows: [],
       activeWindowId: null,
 
@@ -58,6 +70,10 @@ export const useOSStore = create<OSState>()(
         return { theme: nextTheme, wallpaper: nextWallpaper };
       }),
       setWallpaper: (url) => set({ wallpaper: url }),
+      setAccentColor: (accentColor) => set({ accentColor }),
+      setTransparency: (transparency) => set({ transparency }),
+      toggleVirtualCursor: () => set((state) => ({ showVirtualCursor: !state.showVirtualCursor })),
+      setIsMobile: (isMobile) => set({ isMobile }),
       
       openWindow: (id, title, icon) => set((state) => {
         const existing = state.windows.find(w => w.id === id);
@@ -126,11 +142,13 @@ export const useOSStore = create<OSState>()(
       }))
     }),
     {
-      name: 'windows12-storage',
+      name: 'windows12-storage-v2',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ 
         theme: state.theme, 
         wallpaper: state.wallpaper,
+        accentColor: state.accentColor,
+        transparency: state.transparency,
         isLoggedIn: state.isLoggedIn 
       }),
     }

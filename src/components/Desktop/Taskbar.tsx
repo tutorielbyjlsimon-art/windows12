@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useOSStore } from '../../store/useOSStore';
-import { Grid, Globe, Settings, Cloud, Maximize, Minimize } from 'lucide-react';
+import { Grid, Globe, Settings, Cloud, Maximize, Minimize, Folder } from 'lucide-react';
 import clsx from 'clsx';
 import './Taskbar.css';
 
@@ -42,6 +42,13 @@ export default function Taskbar({ toggleStart, isStartOpen }: TaskbarProps) {
     }
   };
 
+  const pinnedApps = [
+    { id: 'browser', title: 'Edge', icon: <Globe size={24} color="#4285F4" /> },
+    { id: 'explorer', title: 'Files', icon: <Folder size={24} color="#ffca28" fill="#ffca28" /> },
+    { id: 'settings', title: 'Settings', icon: <Settings size={24} /> },
+    { id: 'weather', title: 'Weather', icon: <Cloud size={24} color="#00a8ff" /> },
+  ];
+
   return (
     <div className="taskbar glass">
       <div className="taskbar-left">
@@ -51,30 +58,32 @@ export default function Taskbar({ toggleStart, isStartOpen }: TaskbarProps) {
             e.stopPropagation();
             toggleStart();
           }}
-          title="Start (Win)"
+          title="Start"
         >
-          <Grid size={24} color="#0078d4" />
+          <Grid size={24} color="var(--accent-color)" />
         </button>
       </div>
 
       <div className="taskbar-apps">
-        <button className="taskbar-btn" onClick={() => handleAppClick('browser', 'Edge Browser')} title="Microsoft Edge">
-          <Globe size={24} color="#4285F4" />
-        </button>
-        <button className="taskbar-btn" onClick={() => handleAppClick('settings', 'Settings')} title="Settings">
-          <Settings size={24} />
-        </button>
-        <button className="taskbar-btn" onClick={() => handleAppClick('weather', 'Weather')} title="Weather">
-          <Cloud size={24} color="#00a8ff" />
-        </button>
+        {pinnedApps.map(app => (
+          <button 
+            key={app.id} 
+            className={clsx('taskbar-btn', { active: activeWindowId === app.id && !windows.find(w => w.id === app.id)?.isMinimized })} 
+            onClick={() => handleAppClick(app.id, app.title)} 
+            title={app.title}
+          >
+            {app.icon}
+          </button>
+        ))}
 
         {windows.map(win => {
-          if (['browser', 'settings', 'weather'].includes(win.id)) return null;
+          if (pinnedApps.some(a => a.id === win.id)) return null;
           return (
             <button 
               key={win.id}
               className={clsx('taskbar-btn', { active: activeWindowId === win.id && !win.isMinimized })}
               onClick={() => handleAppClick(win.id, win.title)}
+              title={win.title}
             >
               <div className="active-dot" />
               <div style={{ width: '20px', height: '20px', background: 'var(--accent-color)', borderRadius: '4px', opacity: 0.8 }} />
