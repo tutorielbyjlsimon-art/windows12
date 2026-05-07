@@ -50,7 +50,7 @@ export default function Window({ window: win }: WindowProps) {
       case 'terminal': return <TerminalMock />;
       case 'calculator': return <CalculatorMock />;
       case 'explorer': return <FileExplorerMock />;
-      case 'notepad': return <NotepadMock />;
+      case 'notepad': return <NotepadMock fileId={win.fileId} />;
       default:
         return (
           <div className="window-content-inner">

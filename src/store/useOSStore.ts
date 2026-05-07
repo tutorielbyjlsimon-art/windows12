@@ -3,6 +3,15 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 
 export type Theme = 'light' | 'dark';
 
+export interface VFSItem {
+  id: string;
+  name: string;
+  type: 'file' | 'folder';
+  content?: string;
+  parentId: string | null;
+  lastModified: number;
+}
+
 export interface AppWindow {
   id: string;
   title: string;
@@ -13,6 +22,7 @@ export interface AppWindow {
   zIndex: number;
   x?: number;
   y?: number;
+  fileId?: string; // If opening a specific file
 }
 
 interface OSState {
@@ -27,6 +37,9 @@ interface OSState {
   windows: AppWindow[];
   activeWindowId: string | null;
   
+  // Virtual File System
+  fs: VFSItem[];
+  
   // Actions
   completeBoot: () => void;
   login: () => void;
@@ -37,13 +50,26 @@ interface OSState {
   setTransparency: (val: number) => void;
   toggleVirtualCursor: () => void;
   setIsMobile: (val: boolean) => void;
-  openWindow: (id: string, title: string, icon?: string) => void;
+  openWindow: (id: string, title: string, icon?: string, fileId?: string) => void;
   closeWindow: (id: string) => void;
   minimizeWindow: (id: string) => void;
   maximizeWindow: (id: string) => void;
   focusWindow: (id: string) => void;
   updateWindowPosition: (id: string, x: number, y: number) => void;
+
+  // FS Actions
+  createItem: (item: Omit<VFSItem, 'id' | 'lastModified'>) => void;
+  deleteItem: (id: string) => void;
+  updateFileContent: (id: string, content: string) => void;
+  renameItem: (id: string, newName: string) => void;
 }
+
+const DEFAULT_FS: VFSItem[] = [
+  { id: 'root-docs', name: 'Documents', type: 'folder', parentId: null, lastModified: Date.now() },
+  { id: 'root-pics', name: 'Pictures', type: 'folder', parentId: null, lastModified: Date.now() },
+  { id: 'root-down', name: 'Downloads', type: 'folder', parentId: null, lastModified: Date.now() },
+  { id: 'welcome-txt', name: 'Welcome.txt', type: 'file', content: 'Welcome to Windows 12!\n\nThis is a real virtual file system.', parentId: 'root-docs', lastModified: Date.now() },
+];
 
 export const useOSStore = create<OSState>()(
   persist(
@@ -58,6 +84,7 @@ export const useOSStore = create<OSState>()(
       isMobile: false,
       windows: [],
       activeWindowId: null,
+      fs: DEFAULT_FS,
 
       completeBoot: () => set({ isBooting: false }),
       login: () => set({ isLoggedIn: true }),
@@ -75,27 +102,26 @@ export const useOSStore = create<OSState>()(
       toggleVirtualCursor: () => set((state) => ({ showVirtualCursor: !state.showVirtualCursor })),
       setIsMobile: (isMobile) => set({ isMobile }),
       
-      openWindow: (id, title, icon) => set((state) => {
-        const existing = state.windows.find(w => w.id === id);
+      openWindow: (id, title, icon, fileId) => set((state) => {
+        const windowId = fileId ? `${id}-${fileId}` : id;
+        const existing = state.windows.find(w => w.id === windowId);
         const maxZ = Math.max(0, ...state.windows.map(w => w.zIndex));
         
         if (existing) {
-          if (existing.isMinimized) {
-            return {
-              windows: state.windows.map(w => 
-                w.id === id ? { ...w, isMinimized: false, zIndex: maxZ + 1 } : w
-              ),
-              activeWindowId: id
-            };
-          }
-          return { activeWindowId: id };
+          return {
+            windows: state.windows.map(w => 
+              w.id === windowId ? { ...w, isMinimized: false, zIndex: maxZ + 1 } : w
+            ),
+            activeWindowId: windowId
+          };
         }
         
         return {
           windows: [...state.windows, {
-            id,
+            id: windowId,
             title,
             icon,
+            fileId,
             isOpen: true,
             isMinimized: false,
             isMaximized: false,
@@ -103,7 +129,7 @@ export const useOSStore = create<OSState>()(
             x: 100 + (state.windows.length * 20),
             y: 100 + (state.windows.length * 20)
           }],
-          activeWindowId: id
+          activeWindowId: windowId
         };
       }),
 
@@ -139,17 +165,35 @@ export const useOSStore = create<OSState>()(
 
       updateWindowPosition: (id, x, y) => set((state) => ({
         windows: state.windows.map(w => w.id === id ? { ...w, x, y } : w)
+      })),
+
+      // FS Actions
+      createItem: (item) => set((state) => ({
+        fs: [...state.fs, { ...item, id: Math.random().toString(36).substr(2, 9), lastModified: Date.now() }]
+      })),
+
+      deleteItem: (id) => set((state) => ({
+        fs: state.fs.filter(i => i.id !== id && i.parentId !== id) // Delete item and children
+      })),
+
+      updateFileContent: (id, content) => set((state) => ({
+        fs: state.fs.map(i => i.id === id ? { ...i, content, lastModified: Date.now() } : i)
+      })),
+
+      renameItem: (id, name) => set((state) => ({
+        fs: state.fs.map(i => i.id === id ? { ...i, name, lastModified: Date.now() } : i)
       }))
     }),
     {
-      name: 'windows12-storage-v2',
+      name: 'windows12-storage-v3',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ 
         theme: state.theme, 
         wallpaper: state.wallpaper,
         accentColor: state.accentColor,
         transparency: state.transparency,
-        isLoggedIn: state.isLoggedIn 
+        isLoggedIn: state.isLoggedIn,
+        fs: state.fs
       }),
     }
   )
