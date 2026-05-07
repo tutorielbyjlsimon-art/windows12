@@ -22,6 +22,8 @@ export interface AppWindow {
   zIndex: number;
   x?: number;
   y?: number;
+  width?: number | string;
+  height?: number | string;
   fileId?: string; // If opening a specific file
 }
 
@@ -34,6 +36,7 @@ interface OSState {
   transparency: number;
   showVirtualCursor: boolean;
   isMobile: boolean;
+  isActionCenterOpen: boolean;
   windows: AppWindow[];
   activeWindowId: string | null;
   
@@ -50,12 +53,14 @@ interface OSState {
   setTransparency: (val: number) => void;
   toggleVirtualCursor: () => void;
   setIsMobile: (val: boolean) => void;
+  toggleActionCenter: () => void;
+  closeActionCenter: () => void;
   openWindow: (id: string, title: string, icon?: string, fileId?: string) => void;
   closeWindow: (id: string) => void;
   minimizeWindow: (id: string) => void;
   maximizeWindow: (id: string) => void;
   focusWindow: (id: string) => void;
-  updateWindowPosition: (id: string, x: number, y: number) => void;
+  updateWindowDimensions: (id: string, x: number, y: number, width?: number | string, height?: number | string) => void;
 
   // FS Actions
   createItem: (item: Omit<VFSItem, 'id' | 'lastModified'>) => void;
@@ -82,6 +87,7 @@ export const useOSStore = create<OSState>()(
       transparency: 0.8,
       showVirtualCursor: false,
       isMobile: false,
+      isActionCenterOpen: false,
       windows: [],
       activeWindowId: null,
       fs: DEFAULT_FS,
@@ -101,6 +107,8 @@ export const useOSStore = create<OSState>()(
       setTransparency: (transparency) => set({ transparency }),
       toggleVirtualCursor: () => set((state) => ({ showVirtualCursor: !state.showVirtualCursor })),
       setIsMobile: (isMobile) => set({ isMobile }),
+      toggleActionCenter: () => set((state) => ({ isActionCenterOpen: !state.isActionCenterOpen })),
+      closeActionCenter: () => set({ isActionCenterOpen: false }),
       
       openWindow: (id, title, icon, fileId) => set((state) => {
         const windowId = fileId ? `${id}-${fileId}` : id;
@@ -163,8 +171,8 @@ export const useOSStore = create<OSState>()(
         };
       }),
 
-      updateWindowPosition: (id, x, y) => set((state) => ({
-        windows: state.windows.map(w => w.id === id ? { ...w, x, y } : w)
+      updateWindowDimensions: (id, x, y, width, height) => set((state) => ({
+        windows: state.windows.map(w => w.id === id ? { ...w, x, y, width: width ?? w.width, height: height ?? w.height } : w)
       })),
 
       // FS Actions

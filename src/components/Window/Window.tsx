@@ -74,8 +74,8 @@ export default function Window({ window: win }: WindowProps) {
         scale: 1,
         y: win.isMaximized ? 0 : win.y ?? 100,
         x: win.isMaximized ? 0 : win.x ?? 100,
-        width: win.isMaximized ? '100%' : 900, 
-        height: win.isMaximized ? 'calc(100% - 72px)' : 600,
+        width: win.isMaximized ? '100%' : win.width ?? 900, 
+        height: win.isMaximized ? 'calc(100% - 72px)' : win.height ?? 600,
         borderRadius: win.isMaximized ? 0 : 12,
       }}
       exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
@@ -84,7 +84,23 @@ export default function Window({ window: win }: WindowProps) {
       onPointerDown={handlePointerDown}
       onDragEnd={(_, info) => {
         if (!win.isMaximized) {
-          useOSStore.getState().updateWindowPosition(win.id, info.point.x, info.point.y);
+          const { x, y } = info.point;
+          const { innerWidth } = window;
+          const offset = 20; // Snap sensitivity
+          
+          if (x < offset) {
+            // Snap left
+            useOSStore.getState().updateWindowDimensions(win.id, 0, 0, '50%', `calc(100% - 72px)`);
+          } else if (x > innerWidth - offset) {
+            // Snap right
+            useOSStore.getState().updateWindowDimensions(win.id, innerWidth / 2, 0, '50%', `calc(100% - 72px)`);
+          } else if (y < offset) {
+            // Maximize
+            useOSStore.getState().maximizeWindow(win.id);
+          } else {
+            // Normal drag end, reset custom width/height to defaults or keep them
+            useOSStore.getState().updateWindowDimensions(win.id, x, y, 900, 600);
+          }
         }
       }}
     >

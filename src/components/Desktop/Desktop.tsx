@@ -4,15 +4,17 @@ import { useOSStore } from '../../store/useOSStore';
 import Taskbar from './Taskbar';
 import WindowManager from '../Window/WindowManager';
 import StartMenu from './StartMenu';
+import ActionCenter from './ActionCenter';
 
 export default function Desktop() {
   const [isStartOpen, setIsStartOpen] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const wallpaper = useOSStore(state => state.wallpaper);
+  const { wallpaper, isActionCenterOpen, closeActionCenter } = useOSStore();
 
   const toggleStart = () => setIsStartOpen(prev => !prev);
   const closeStart = () => {
     if (isStartOpen) setIsStartOpen(false);
+    if (isActionCenterOpen) closeActionCenter();
   };
 
   // Preload image to prevent flicker
@@ -57,6 +59,12 @@ export default function Desktop() {
       <AnimatePresence>
         {isStartOpen && (
           <StartMenu closeStart={closeStart} />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isActionCenterOpen && (
+          <ActionCenter />
         )}
       </AnimatePresence>
 

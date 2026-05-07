@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useOSStore } from '../../store/useOSStore';
-import { Grid, Globe, Settings, Cloud, Maximize, Minimize, Folder } from 'lucide-react';
+import { Grid, Globe, Settings, Cloud, Maximize, Minimize, Folder, Wifi, BatteryMedium, Volume2 } from 'lucide-react';
 import clsx from 'clsx';
 import './Taskbar.css';
 
@@ -10,7 +10,7 @@ interface TaskbarProps {
 }
 
 export default function Taskbar({ toggleStart, isStartOpen }: TaskbarProps) {
-  const { windows, activeWindowId, openWindow, minimizeWindow, focusWindow } = useOSStore();
+  const { windows, activeWindowId, openWindow, minimizeWindow, focusWindow, toggleActionCenter } = useOSStore();
   const [time, setTime] = useState(new Date());
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -95,6 +95,16 @@ export default function Taskbar({ toggleStart, isStartOpen }: TaskbarProps) {
       <div className="taskbar-tray">
         <button className="tray-icon-btn" onClick={toggleFullscreen} title="Toggle Fullscreen">
           {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
+        </button>
+        <button 
+          className="tray-icon-btn" 
+          onClick={(e) => { e.stopPropagation(); toggleActionCenter(); }} 
+          title="Quick Settings"
+          style={{ display: 'flex', gap: '6px', alignItems: 'center' }}
+        >
+          <Wifi size={14} />
+          <Volume2 size={14} />
+          <BatteryMedium size={14} />
         </button>
         <div className="tray-item time-tray">
           <div className="time">{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
