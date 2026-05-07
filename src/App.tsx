@@ -2,11 +2,13 @@ import { useEffect } from 'react';
 import { useOSStore } from './store/useOSStore';
 import BootScreen from './components/BootScreen';
 import LoginScreen from './components/LoginScreen';
+import LockScreen from './components/LockScreen';
 import Desktop from './components/Desktop/Desktop';
 import VirtualCursor from './components/VirtualCursor';
+import NotificationsLayer from './components/NotificationsLayer';
 
 function App() {
-  const { isBooting, isLoggedIn, theme, accentColor, transparency, setIsMobile } = useOSStore();
+  const { isBooting, isLoggedIn, isLocked, theme, accentColor, transparency, setIsMobile, lock } = useOSStore();
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -23,8 +25,17 @@ function App() {
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, [setIsMobile]);
+    
+    const handleKeys = (e: KeyboardEvent) => {
+      if (e.key === 'l' && e.metaKey) { e.preventDefault(); lock(); }
+    };
+    window.addEventListener('keydown', handleKeys);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('keydown', handleKeys);
+    };
+  }, [setIsMobile, lock]);
 
   return (
     <div className="os-container">
@@ -32,10 +43,13 @@ function App() {
         <BootScreen />
       ) : !isLoggedIn ? (
         <LoginScreen />
+      ) : isLocked ? (
+        <LockScreen />
       ) : (
         <>
           <Desktop />
           <VirtualCursor />
+          <NotificationsLayer />
         </>
       )}
     </div>

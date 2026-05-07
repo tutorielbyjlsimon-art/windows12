@@ -24,12 +24,21 @@ export interface AppWindow {
   y?: number;
   width?: number | string;
   height?: number | string;
-  fileId?: string; // If opening a specific file
+  fileId?: string;
+}
+
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+  time: number;
 }
 
 interface OSState {
   isBooting: boolean;
   isLoggedIn: boolean;
+  isLocked: boolean;
   theme: Theme;
   wallpaper: string;
   accentColor: string;
@@ -37,8 +46,10 @@ interface OSState {
   showVirtualCursor: boolean;
   isMobile: boolean;
   isActionCenterOpen: boolean;
+  isTaskViewOpen: boolean;
   windows: AppWindow[];
   activeWindowId: string | null;
+  notifications: Notification[];
   
   // Virtual File System
   fs: VFSItem[];
@@ -47,6 +58,8 @@ interface OSState {
   completeBoot: () => void;
   login: () => void;
   logout: () => void;
+  lock: () => void;
+  unlock: () => void;
   toggleTheme: () => void;
   setWallpaper: (url: string) => void;
   setAccentColor: (color: string) => void;
@@ -55,12 +68,17 @@ interface OSState {
   setIsMobile: (val: boolean) => void;
   toggleActionCenter: () => void;
   closeActionCenter: () => void;
+  toggleTaskView: () => void;
   openWindow: (id: string, title: string, icon?: string, fileId?: string) => void;
   closeWindow: (id: string) => void;
   minimizeWindow: (id: string) => void;
   maximizeWindow: (id: string) => void;
   focusWindow: (id: string) => void;
   updateWindowDimensions: (id: string, x: number, y: number, width?: number | string, height?: number | string) => void;
+
+  // Notification Actions
+  addNotification: (notif: Omit<Notification, 'id' | 'time'>) => void;
+  removeNotification: (id: string) => void;
 
   // FS Actions
   createItem: (item: Omit<VFSItem, 'id' | 'lastModified'>) => void;
@@ -81,6 +99,7 @@ export const useOSStore = create<OSState>()(
     (set) => ({
       isBooting: true,
       isLoggedIn: false,
+      isLocked: false,
       theme: 'dark',
       wallpaper: 'https://images.unsplash.com/photo-1477346611705-65d1883cee1e?auto=format&fit=crop&q=80&w=2000',
       accentColor: '#0078d4',
@@ -88,13 +107,17 @@ export const useOSStore = create<OSState>()(
       showVirtualCursor: false,
       isMobile: false,
       isActionCenterOpen: false,
+      isTaskViewOpen: false,
       windows: [],
       activeWindowId: null,
+      notifications: [],
       fs: DEFAULT_FS,
 
       completeBoot: () => set({ isBooting: false }),
-      login: () => set({ isLoggedIn: true }),
-      logout: () => set({ isLoggedIn: false }),
+      login: () => set({ isLoggedIn: true, isLocked: false }),
+      logout: () => set({ isLoggedIn: false, isLocked: false, windows: [] }),
+      lock: () => set({ isLocked: true }),
+      unlock: () => set({ isLocked: false }),
       toggleTheme: () => set((state) => {
         const nextTheme = state.theme === 'light' ? 'dark' : 'light';
         const nextWallpaper = nextTheme === 'light' 
@@ -109,6 +132,7 @@ export const useOSStore = create<OSState>()(
       setIsMobile: (isMobile) => set({ isMobile }),
       toggleActionCenter: () => set((state) => ({ isActionCenterOpen: !state.isActionCenterOpen })),
       closeActionCenter: () => set({ isActionCenterOpen: false }),
+      toggleTaskView: () => set((state) => ({ isTaskViewOpen: !state.isTaskViewOpen })),
       
       openWindow: (id, title, icon, fileId) => set((state) => {
         const windowId = fileId ? `${id}-${fileId}` : id;
@@ -175,13 +199,20 @@ export const useOSStore = create<OSState>()(
         windows: state.windows.map(w => w.id === id ? { ...w, x, y, width: width ?? w.width, height: height ?? w.height } : w)
       })),
 
-      // FS Actions
+      addNotification: (notif) => set((state) => ({
+        notifications: [...state.notifications, { ...notif, id: Math.random().toString(36).substr(2, 9), time: Date.now() }]
+      })),
+
+      removeNotification: (id) => set((state) => ({
+        notifications: state.notifications.filter(n => n.id !== id)
+      })),
+
       createItem: (item) => set((state) => ({
         fs: [...state.fs, { ...item, id: Math.random().toString(36).substr(2, 9), lastModified: Date.now() }]
       })),
 
       deleteItem: (id) => set((state) => ({
-        fs: state.fs.filter(i => i.id !== id && i.parentId !== id) // Delete item and children
+        fs: state.fs.filter(i => i.id !== id && i.parentId !== id)
       })),
 
       updateFileContent: (id, content) => set((state) => ({
@@ -193,7 +224,7 @@ export const useOSStore = create<OSState>()(
       }))
     }),
     {
-      name: 'windows12-storage-v3',
+      name: 'windows12-storage-v4',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ 
         theme: state.theme, 
@@ -201,6 +232,7 @@ export const useOSStore = create<OSState>()(
         accentColor: state.accentColor,
         transparency: state.transparency,
         isLoggedIn: state.isLoggedIn,
+        isLocked: state.isLocked,
         fs: state.fs
       }),
     }
