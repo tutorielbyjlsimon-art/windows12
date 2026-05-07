@@ -37,7 +37,8 @@ export const useOSStore = create<OSState>((set) => ({
   isBooting: true,
   isLoggedIn: false,
   theme: 'dark',
-  wallpaper: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop',
+  // Fallback direct links from Unsplash Source or more stable ones
+  wallpaper: 'https://images.unsplash.com/photo-1477346611705-65d1883cee1e?auto=format&fit=crop&q=80&w=2000',
   windows: [],
   activeWindowId: null,
 
@@ -47,8 +48,8 @@ export const useOSStore = create<OSState>((set) => ({
   toggleTheme: () => set((state) => {
     const nextTheme = state.theme === 'light' ? 'dark' : 'light';
     const nextWallpaper = nextTheme === 'light' 
-      ? 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=2574&auto=format&fit=crop'
-      : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop';
+      ? 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80&w=2000'
+      : 'https://images.unsplash.com/photo-1477346611705-65d1883cee1e?auto=format&fit=crop&q=80&w=2000';
     return { theme: nextTheme, wallpaper: nextWallpaper };
   }),
   setWallpaper: (url) => set({ wallpaper: url }),

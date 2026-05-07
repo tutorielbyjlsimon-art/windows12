@@ -72,7 +72,9 @@ body, html, #root {
   z-index: -1;
   background-size: cover;
   background-position: center;
-  transition: filter 0.5s ease, transform 0.8s ease;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  transition: filter 0.5s ease, transform 0.8s ease, background-image 0.5s ease-in-out;
 }
 
 .os-wallpaper.blurred {
