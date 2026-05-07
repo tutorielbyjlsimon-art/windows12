@@ -64,12 +64,15 @@ export const useOSStore = create<OSState>()(
         const maxZ = Math.max(0, ...state.windows.map(w => w.zIndex));
         
         if (existing) {
-          return {
-            windows: state.windows.map(w => 
-              w.id === id ? { ...w, isMinimized: false, zIndex: maxZ + 1 } : w
-            ),
-            activeWindowId: id
-          };
+          if (existing.isMinimized) {
+            return {
+              windows: state.windows.map(w => 
+                w.id === id ? { ...w, isMinimized: false, zIndex: maxZ + 1 } : w
+              ),
+              activeWindowId: id
+            };
+          }
+          return { activeWindowId: id };
         }
         
         return {
@@ -107,6 +110,8 @@ export const useOSStore = create<OSState>()(
       })),
 
       focusWindow: (id) => set((state) => {
+        const win = state.windows.find(w => w.id === id);
+        if (!win) return state;
         const maxZ = Math.max(0, ...state.windows.map(w => w.zIndex));
         return {
           windows: state.windows.map(w => 
@@ -127,7 +132,7 @@ export const useOSStore = create<OSState>()(
         theme: state.theme, 
         wallpaper: state.wallpaper,
         isLoggedIn: state.isLoggedIn 
-      }), // Only persist these
+      }),
     }
   )
 );
