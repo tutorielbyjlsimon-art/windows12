@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useMemo, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useOSStore } from '../../store/useOSStore';
-import { Search, Globe, Settings, Cloud, Terminal, Calculator, FileText, Folder, Image as ImageIcon, Send, Sparkles, X } from 'lucide-react';
+import { Search, FileText, Sparkles } from 'lucide-react';
 
 export default function Spotlight() {
   const { fs, openWindow } = useOSStore();
@@ -31,7 +31,6 @@ export default function Spotlight() {
   const handleAiAsk = async () => {
     if (!query) return;
     setIsAiLoading(true);
-    // Simulate AI API call
     setTimeout(() => {
       setAiResponse(`En tant que Copilot Windows 12, j'ai analysé votre requête : "${query}". Je peux vous aider à organiser vos fichiers sur le disque (C:) ou changer votre fond d'écran dans les paramètres.`);
       setIsAiLoading(false);
@@ -47,6 +46,16 @@ export default function Spotlight() {
       ...filteredFiles.map(f => ({ id: f.id, title: f.name, type: 'file' as const, name: f.name }))
     ];
   }, [query, fs]);
+
+  const handleLaunch = (item: any) => {
+    if (item.type === 'app') openWindow(item.id, item.title, item.icon);
+    else if (item.type === 'file') {
+       openWindow('notepad', item.title, 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Windows_Notepad_Icon.svg', item.id);
+    }
+    setIsOpen(false);
+    setInput('');
+    setAiResponse('');
+  };
 
   if (!isOpen) return null;
 
@@ -75,12 +84,11 @@ export default function Spotlight() {
         </div>
 
         <div style={{ display: 'flex', height: '450px' }}>
-          {/* Results Side */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '16px', borderRight: '1px solid var(--glass-border)' }}>
             <h3 style={{ fontSize: '12px', opacity: 0.5, marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '1px' }}>Résultats</h3>
             {results.map((res: any, i) => (
-              <div key={i} onClick={() => openWindow(res.id, res.title)} style={{ padding: '12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '15px', cursor: 'pointer' }} className="search-result-item">
-                 {res.type === 'app' ? <img src={res.icon} style={{ width: '32px', height: '32px' }} /> : <FileText size={32} opacity={0.7} />}
+              <div key={i} onClick={() => handleLaunch(res)} style={{ padding: '12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '15px', cursor: 'pointer' }} className="search-result-item">
+                 {res.type === 'app' ? <img src={res.icon} style={{ width: '32px', height: '32px' }} alt={res.title} /> : <FileText size={32} opacity={0.7} />}
                  <div>
                    <div style={{ fontSize: '14px', fontWeight: 500 }}>{res.title}</div>
                    <div style={{ fontSize: '11px', opacity: 0.5 }}>{res.type === 'app' ? 'Application' : 'Fichier'}</div>
@@ -89,7 +97,6 @@ export default function Spotlight() {
             ))}
           </div>
 
-          {/* AI Side */}
           <div style={{ width: '280px', background: 'rgba(255,255,255,0.02)', padding: '24px', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: 'var(--accent-color)', fontWeight: 600 }}>
                <Sparkles size={18} /> Copilot
@@ -117,5 +124,3 @@ export default function Spotlight() {
     </div>
   );
 }
-
-import { useMemo } from 'react';
