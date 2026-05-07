@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useOSStore } from '../../store/useOSStore';
 import { Search, Globe, Settings, Cloud, Terminal, Calculator, FileText, Folder, Image as ImageIcon } from 'lucide-react';
 
@@ -32,14 +32,16 @@ export default function Spotlight() {
     if (!query) return [];
     const filteredApps = apps.filter(a => a.title.toLowerCase().includes(query.toLowerCase()));
     const filteredFiles = fs.filter(f => f.name.toLowerCase().includes(query.toLowerCase()));
-    return [...filteredApps.map(a => ({ ...a, type: 'app' })), ...filteredFiles.map(f => ({ ...f, title: f.name, type: 'file' }))];
+    return [
+      ...filteredApps.map(a => ({ ...a, type: 'app' as const })), 
+      ...filteredFiles.map(f => ({ id: f.id, title: f.name, type: 'file' as const, name: f.name }))
+    ];
   }, [query, fs]);
 
   const handleLaunch = (item: any) => {
     if (item.type === 'app') openWindow(item.id, item.title);
     else if (item.type === 'file') {
-       if (item.type === 'folder') openWindow('explorer', 'Files');
-       else openWindow('notepad', item.name, 'notepad', item.id);
+       openWindow('notepad', item.title, 'notepad', item.id);
     }
     setIsOpen(false);
     setInput('');
@@ -67,7 +69,7 @@ export default function Spotlight() {
           />
         </div>
         <div style={{ maxHeight: '400px', overflowY: 'auto', padding: '10px' }}>
-          {results.length > 0 ? results.map((res, i) => (
+          {results.length > 0 ? results.map((res: any, i) => (
             <div 
               key={i} 
               onClick={() => handleLaunch(res)}
