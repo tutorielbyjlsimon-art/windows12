@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useOSStore } from '../../store/useOSStore';
-import { Search, Power, Globe, Settings, Cloud, Terminal, Calculator, FileText, Folder } from 'lucide-react';
+import { Search, Power, Globe, Settings, Cloud, Terminal, Calculator, FileText, Folder, Image as ImageIcon } from 'lucide-react';
 import './StartMenu.css';
 
 interface StartMenuProps {
@@ -20,6 +20,7 @@ export default function StartMenu({ closeStart }: StartMenuProps) {
     { id: 'explorer', title: 'Files', icon: <Folder size={32} color="#ffca28" fill="#ffca28" /> },
     { id: 'settings', title: 'Settings', icon: <Settings size={32} /> },
     { id: 'weather', title: 'Weather', icon: <Cloud size={32} color="#00a8ff" /> },
+    { id: 'gallery', title: 'Photos', icon: <ImageIcon size={32} color="#e81123" /> },
     { id: 'terminal', title: 'Terminal', icon: <Terminal size={32} /> },
     { id: 'calculator', title: 'Calc', icon: <Calculator size={32} color="#f0932b" /> },
     { id: 'notepad', title: 'Notepad', icon: <FileText size={32} color="#48dbfb" /> },

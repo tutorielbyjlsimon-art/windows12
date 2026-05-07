@@ -5,6 +5,7 @@ import Taskbar from './Taskbar';
 import WindowManager from '../Window/WindowManager';
 import StartMenu from './StartMenu';
 import ActionCenter from './ActionCenter';
+import DesktopWidgets from './DesktopWidgets';
 
 export default function Desktop() {
   const [isStartOpen, setIsStartOpen] = useState(false);
@@ -51,6 +52,8 @@ export default function Desktop() {
           zIndex: 0
         }}
       />
+
+      <DesktopWidgets />
       
       <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%', zIndex: 1 }}>
         <WindowManager />

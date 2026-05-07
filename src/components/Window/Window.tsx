@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useOSStore } from '../../store/useOSStore';
 import type { AppWindow } from '../../store/useOSStore';
-import { Minus, Square, X, Globe, Settings, Cloud, Terminal, Calculator, FileText, Folder } from 'lucide-react';
+import { Minus, Square, X, Globe, Settings, Cloud, Terminal, Calculator, FileText, Folder, Image as ImageIcon } from 'lucide-react';
 import BrowserMock from './Apps/BrowserMock';
 import SettingsMock from './Apps/SettingsMock';
 import WeatherMock from './Apps/WeatherMock';
@@ -10,6 +10,7 @@ import TerminalMock from './Apps/TerminalMock';
 import CalculatorMock from './Apps/CalculatorMock';
 import FileExplorerMock from './Apps/FileExplorerMock';
 import NotepadMock from './Apps/NotepadMock';
+import GalleryMock from './Apps/GalleryMock';
 import ErrorBoundary from '../ErrorBoundary';
 import './Window.css';
 
@@ -38,6 +39,7 @@ export default function Window({ window: win }: WindowProps) {
       case 'calculator': return <Calculator size={16} color="#f0932b" />;
       case 'notepad': return <FileText size={16} color="#48dbfb" />;
       case 'explorer': return <Folder size={16} color="#ffca28" fill="#ffca28" />;
+      case 'gallery': return <ImageIcon size={16} color="#e81123" />;
       default: return null;
     }
   };
@@ -51,6 +53,7 @@ export default function Window({ window: win }: WindowProps) {
       case 'calculator': return <CalculatorMock />;
       case 'explorer': return <FileExplorerMock />;
       case 'notepad': return <NotepadMock fileId={win.fileId} />;
+      case 'gallery': return <GalleryMock />;
       default:
         return (
           <div className="window-content-inner">
@@ -89,16 +92,12 @@ export default function Window({ window: win }: WindowProps) {
           const offset = 20; // Snap sensitivity
           
           if (x < offset) {
-            // Snap left
             useOSStore.getState().updateWindowDimensions(win.id, 0, 0, '50%', `calc(100% - 72px)`);
           } else if (x > innerWidth - offset) {
-            // Snap right
             useOSStore.getState().updateWindowDimensions(win.id, innerWidth / 2, 0, '50%', `calc(100% - 72px)`);
           } else if (y < offset) {
-            // Maximize
             useOSStore.getState().maximizeWindow(win.id);
           } else {
-            // Normal drag end, reset custom width/height to defaults or keep them
             useOSStore.getState().updateWindowDimensions(win.id, x, y, 900, 600);
           }
         }
