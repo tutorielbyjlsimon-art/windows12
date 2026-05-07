@@ -6,6 +6,9 @@ import { Minus, Square, X, Globe, Settings, Cloud, Terminal, Calculator, FileTex
 import BrowserMock from './Apps/BrowserMock';
 import SettingsMock from './Apps/SettingsMock';
 import WeatherMock from './Apps/WeatherMock';
+import TerminalMock from './Apps/TerminalMock';
+import CalculatorMock from './Apps/CalculatorMock';
+import ErrorBoundary from '../ErrorBoundary';
 import './Window.css';
 
 interface WindowProps {
@@ -41,6 +44,8 @@ export default function Window({ window: win }: WindowProps) {
       case 'browser': return <BrowserMock />;
       case 'settings': return <SettingsMock />;
       case 'weather': return <WeatherMock />;
+      case 'terminal': return <TerminalMock />;
+      case 'calculator': return <CalculatorMock />;
       default:
         return (
           <div className="window-content-inner">
@@ -62,8 +67,8 @@ export default function Window({ window: win }: WindowProps) {
       animate={{ 
         opacity: 1, 
         scale: 1,
-        y: win.isMaximized ? 0 : (win.zIndex % 10) * 20 + 50,
-        x: win.isMaximized ? 0 : (win.zIndex % 10) * 20 + 100,
+        y: win.isMaximized ? 0 : win.y ?? 100,
+        x: win.isMaximized ? 0 : win.x ?? 100,
         width: win.isMaximized ? '100%' : 900, 
         height: win.isMaximized ? 'calc(100% - 72px)' : 600,
         borderRadius: win.isMaximized ? 0 : 12,
@@ -72,6 +77,11 @@ export default function Window({ window: win }: WindowProps) {
       transition={{ type: 'spring', damping: 25, stiffness: 200 }}
       style={{ zIndex: win.zIndex, position: 'absolute' }}
       onPointerDown={handlePointerDown}
+      onDragEnd={(_, info) => {
+        if (!win.isMaximized) {
+          useOSStore.getState().updateWindowPosition(win.id, info.point.x, info.point.y);
+        }
+      }}
     >
       <div className="window-header" onDoubleClick={() => maximizeWindow(win.id)}>
         <div className="window-title">
@@ -91,7 +101,9 @@ export default function Window({ window: win }: WindowProps) {
         </div>
       </div>
       <div className="window-content">
-        {renderContent()}
+        <ErrorBoundary>
+          {renderContent()}
+        </ErrorBoundary>
       </div>
     </motion.div>
   );
