@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useOSStore } from '../../store/useOSStore';
-import { Search, Power, Globe, Settings, Cloud, Terminal, Calculator, FileText, Folder, Image as ImageIcon } from 'lucide-react';
+import { Search, Power } from 'lucide-react';
 import './StartMenu.css';
 
 interface StartMenuProps {

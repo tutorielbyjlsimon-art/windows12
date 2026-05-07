@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Image as ImageIcon, Play, SkipBack, PlayCircle, SkipForward, Film } from 'lucide-react';
+import { Image as ImageIcon, PlayCircle } from 'lucide-react';
 
 export default function GalleryMock() {
   const [selectedMedia, setSelectedMedia] = useState<{ url: string, type: 'photo' | 'video' } | null>(null);

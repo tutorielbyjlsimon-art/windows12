@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useOSStore } from '../../store/useOSStore';
-import { Grid, Globe, Settings, Cloud, Maximize, Minimize, Folder, Wifi, BatteryMedium, Volume2 } from 'lucide-react';
+import { Maximize, Minimize, Wifi, BatteryMedium, Volume2 } from 'lucide-react';
 import clsx from 'clsx';
 import './Taskbar.css';
 
