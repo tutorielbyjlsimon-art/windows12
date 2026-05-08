@@ -16,14 +16,14 @@ export default function StartMenu({ closeStart }: StartMenuProps) {
   };
 
   const apps = [
-    { id: 'browser', title: 'Edge', icon: '/icons/edge.png' },
-    { id: 'explorer', title: 'Files', icon: '/icons/explorer.png' },
-    { id: 'settings', title: 'Settings', icon: '/icons/settings.png' },
-    { id: 'weather', title: 'Weather', icon: '/icons/weather.png' },
-    { id: 'gallery', title: 'Photos', icon: '/icons/photos.png' },
-    { id: 'terminal', title: 'Terminal', icon: '/icons/terminal.png' },
-    { id: 'calculator', title: 'Calc', icon: '/icons/calculator.png' },
-    { id: 'notepad', title: 'Notepad', icon: '/icons/notepad.png' },
+    { id: 'browser', title: 'Edge', icon: 'icons/edge.png' },
+    { id: 'explorer', title: 'Files', icon: 'icons/explorer.png' },
+    { id: 'settings', title: 'Settings', icon: 'icons/settings.png' },
+    { id: 'weather', title: 'Weather', icon: 'icons/weather.png' },
+    { id: 'gallery', title: 'Photos', icon: 'icons/photos.png' },
+    { id: 'terminal', title: 'Terminal', icon: 'icons/terminal.png' },
+    { id: 'calculator', title: 'Calc', icon: 'icons/calculator.png' },
+    { id: 'notepad', title: 'Notepad', icon: 'icons/notepad.png' },
   ];
 
   return (

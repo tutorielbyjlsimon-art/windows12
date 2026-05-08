@@ -20,12 +20,12 @@ export default function Spotlight() {
   }, []);
 
   const apps = [
-    { id: 'browser', title: 'Edge', icon: '/icons/edge.png' },
-    { id: 'explorer', title: 'Files', icon: '/icons/explorer.png' },
-    { id: 'settings', title: 'Settings', icon: '/icons/settings.png' },
-    { id: 'weather', title: 'Weather', icon: '/icons/weather.png' },
-    { id: 'gallery', title: 'Photos', icon: '/icons/photos.png' },
-    { id: 'terminal', title: 'Terminal', icon: '/icons/terminal.png' },
+    { id: 'browser', title: 'Edge', icon: 'icons/edge.png' },
+    { id: 'explorer', title: 'Files', icon: 'icons/explorer.png' },
+    { id: 'settings', title: 'Settings', icon: 'icons/settings.png' },
+    { id: 'weather', title: 'Weather', icon: 'icons/weather.png' },
+    { id: 'gallery', title: 'Photos', icon: 'icons/photos.png' },
+    { id: 'terminal', title: 'Terminal', icon: 'icons/terminal.png' },
   ];
 
   const handleAiAsk = async () => {
@@ -50,7 +50,7 @@ export default function Spotlight() {
   const handleLaunch = (item: any) => {
     if (item.type === 'app') openWindow(item.id, item.title, item.icon);
     else if (item.type === 'file') {
-       openWindow('notepad', item.title, '/icons/notepad.png', item.id);
+       openWindow('notepad', item.title, 'icons/notepad.png', item.id);
     }
     setIsOpen(false);
     setInput('');

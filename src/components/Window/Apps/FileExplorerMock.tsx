@@ -24,7 +24,7 @@ export default function FileExplorerMock() {
     if (item.type === 'folder' || item.type === 'drive') {
       setCurrentPath(item.id);
     } else {
-      openWindow('notepad', item.name, 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Windows_Notepad_Icon.svg', item.id);
+      openWindow('notepad', item.name, 'icons/notepad.png', item.id);
     }
   };
 

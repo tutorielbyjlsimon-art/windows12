@@ -43,10 +43,10 @@ export default function Taskbar({ toggleStart, isStartOpen }: TaskbarProps) {
   };
 
   const pinnedApps = [
-    { id: 'browser', title: 'Edge', icon: '/icons/edge.png' },
-    { id: 'explorer', title: 'Files', icon: '/icons/explorer.png' },
-    { id: 'settings', title: 'Settings', icon: '/icons/settings.png' },
-    { id: 'weather', title: 'Weather', icon: '/icons/weather.png' },
+    { id: 'browser', title: 'Edge', icon: 'icons/edge.png' },
+    { id: 'explorer', title: 'Files', icon: 'icons/explorer.png' },
+    { id: 'settings', title: 'Settings', icon: 'icons/settings.png' },
+    { id: 'weather', title: 'Weather', icon: 'icons/weather.png' },
   ];
 
   return (
@@ -54,10 +54,10 @@ export default function Taskbar({ toggleStart, isStartOpen }: TaskbarProps) {
       <div className="taskbar-left">
         <button 
           className={clsx('taskbar-btn copilot-btn')}
-          onClick={() => openWindow('copilot-chat', 'Copilot IA', '/icons/copilot.png')}
+          onClick={() => openWindow('copilot-chat', 'Copilot IA', 'icons/copilot.png')}
           title="Copilot IA"
         >
-          <img src="/icons/copilot.png" style={{ width: '22px', height: '22px' }} alt="Copilot" />
+          <img src="icons/copilot.png" style={{ width: '22px', height: '22px' }} alt="Copilot" />
         </button>
         <button 
           className={clsx('taskbar-btn start-btn', { active: isStartOpen })}
@@ -67,7 +67,7 @@ export default function Taskbar({ toggleStart, isStartOpen }: TaskbarProps) {
           }}
           title="Démarrer"
         >
-          <img src="/icons/windows.png" style={{ width: '22px', height: '22px' }} alt="Start" />
+          <img src="icons/windows.png" style={{ width: '22px', height: '22px' }} alt="Start" />
         </button>
       </div>
 
