@@ -16,14 +16,14 @@ export default function StartMenu({ closeStart }: StartMenuProps) {
   };
 
   const apps = [
-    { id: 'browser', title: 'Edge', icon: 'https://upload.wikimedia.org/wikipedia/commons/f/f6/Microsoft_Edge_logo_%282019%29.svg' },
-    { id: 'explorer', title: 'Files', icon: 'https://upload.wikimedia.org/wikipedia/commons/a/af/Windows_11_File_Explorer_Icon.svg' },
-    { id: 'settings', title: 'Settings', icon: 'https://upload.wikimedia.org/wikipedia/commons/e/ed/Windows_Settings_icon.svg' },
-    { id: 'weather', title: 'Weather', icon: 'https://upload.wikimedia.org/wikipedia/commons/1/16/Windows_11_Weather_icon.svg' },
-    { id: 'gallery', title: 'Photos', icon: 'https://upload.wikimedia.org/wikipedia/commons/a/aa/Windows_11_Photos_icon.svg' },
-    { id: 'terminal', title: 'Terminal', icon: 'https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_Terminal_logo.svg' },
-    { id: 'calculator', title: 'Calc', icon: 'https://upload.wikimedia.org/wikipedia/commons/c/cf/Windows_10_Calculator_icon.svg' },
-    { id: 'notepad', title: 'Notepad', icon: 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Windows_Notepad_Icon.svg' },
+    { id: 'browser', title: 'Edge', icon: '/icons/edge.png' },
+    { id: 'explorer', title: 'Files', icon: '/icons/explorer.png' },
+    { id: 'settings', title: 'Settings', icon: '/icons/settings.png' },
+    { id: 'weather', title: 'Weather', icon: '/icons/weather.png' },
+    { id: 'gallery', title: 'Photos', icon: '/icons/photos.png' },
+    { id: 'terminal', title: 'Terminal', icon: '/icons/terminal.png' },
+    { id: 'calculator', title: 'Calc', icon: '/icons/calculator.png' },
+    { id: 'notepad', title: 'Notepad', icon: '/icons/notepad.png' },
   ];
 
   return (

@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useOSStore } from '../../store/useOSStore';
 import type { AppWindow } from '../../store/useOSStore';
-import { Minus, Square, X, Globe, Settings, Cloud, Terminal, Calculator, FileText, Folder, Image as ImageIcon } from 'lucide-react';
+import { Minus, Square, X } from 'lucide-react';
 import BrowserMock from './Apps/BrowserMock';
 import SettingsMock from './Apps/SettingsMock';
 import WeatherMock from './Apps/WeatherMock';
@@ -31,15 +31,17 @@ export default function Window({ window: win }: WindowProps) {
   };
 
   const getIcon = () => {
+    if (win.icon) return <img src={win.icon} style={{ width: '16px', height: '16px' }} alt="" />;
     switch (win.id) {
-      case 'browser': return <Globe size={16} color="#0078d4" />;
-      case 'settings': return <Settings size={16} />;
-      case 'weather': return <Cloud size={16} color="#4cc2ff" />;
-      case 'terminal': return <Terminal size={16} />;
-      case 'calculator': return <Calculator size={16} color="#f0932b" />;
-      case 'notepad': return <FileText size={16} color="#48dbfb" />;
-      case 'explorer': return <Folder size={16} color="#ffca28" fill="#ffca28" />;
-      case 'gallery': return <ImageIcon size={16} color="#e81123" />;
+      case 'browser': return <img src="/icons/edge.png" style={{ width: '16px', height: '16px' }} alt="" />;
+      case 'settings': return <img src="/icons/settings.png" style={{ width: '16px', height: '16px' }} alt="" />;
+      case 'weather': return <img src="/icons/weather.png" style={{ width: '16px', height: '16px' }} alt="" />;
+      case 'terminal': return <img src="/icons/terminal.png" style={{ width: '16px', height: '16px' }} alt="" />;
+      case 'calculator': return <img src="/icons/calculator.png" style={{ width: '16px', height: '16px' }} alt="" />;
+      case 'notepad': return <img src="/icons/notepad.png" style={{ width: '16px', height: '16px' }} alt="" />;
+      case 'explorer': return <img src="/icons/explorer.png" style={{ width: '16px', height: '16px' }} alt="" />;
+      case 'gallery': return <img src="/icons/photos.png" style={{ width: '16px', height: '16px' }} alt="" />;
+      case 'copilot-chat': return <img src="/icons/copilot.png" style={{ width: '16px', height: '16px' }} alt="" />;
       default: return null;
     }
   };
@@ -54,6 +56,16 @@ export default function Window({ window: win }: WindowProps) {
       case 'explorer': return <FileExplorerMock />;
       case 'notepad': return <NotepadMock fileId={win.fileId} />;
       case 'gallery': return <GalleryMock />;
+      case 'copilot-chat': return (
+        <div className="window-content-inner" style={{ background: '#0f0f0f', color: 'white', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+          <img src="/icons/copilot.png" style={{ width: '64px', height: '64px', marginBottom: '20px' }} alt="Copilot" />
+          <h2>Windows Copilot IA</h2>
+          <p style={{ opacity: 0.7, maxWidth: '400px', marginTop: '10px' }}>Votre assistant personnel intelligent est prêt. Posez-moi n'importe quelle question sur Windows 12.</p>
+          <div style={{ marginTop: '30px', width: '80%', padding: '15px', background: 'rgba(255,255,255,0.1)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
+            Tapez un message...
+          </div>
+        </div>
+      );
       default:
         return (
           <div className="window-content-inner">

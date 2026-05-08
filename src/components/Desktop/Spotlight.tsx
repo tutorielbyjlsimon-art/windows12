@@ -20,12 +20,12 @@ export default function Spotlight() {
   }, []);
 
   const apps = [
-    { id: 'browser', title: 'Edge', icon: 'https://img.icons8.com/color/512/microsoft-edge.png' },
-    { id: 'explorer', title: 'Files', icon: 'https://img.icons8.com/color/512/folder-invoices--v1.png' },
-    { id: 'settings', title: 'Settings', icon: 'https://img.icons8.com/color/512/settings--v1.png' },
-    { id: 'weather', title: 'Weather', icon: 'https://img.icons8.com/color/512/partly-cloudy-day--v1.png' },
-    { id: 'gallery', title: 'Photos', icon: 'https://img.icons8.com/color/512/photos.png' },
-    { id: 'terminal', title: 'Terminal', icon: 'https://img.icons8.com/color/512/console.png' },
+    { id: 'browser', title: 'Edge', icon: '/icons/edge.png' },
+    { id: 'explorer', title: 'Files', icon: '/icons/explorer.png' },
+    { id: 'settings', title: 'Settings', icon: '/icons/settings.png' },
+    { id: 'weather', title: 'Weather', icon: '/icons/weather.png' },
+    { id: 'gallery', title: 'Photos', icon: '/icons/photos.png' },
+    { id: 'terminal', title: 'Terminal', icon: '/icons/terminal.png' },
   ];
 
   const handleAiAsk = async () => {
@@ -50,7 +50,7 @@ export default function Spotlight() {
   const handleLaunch = (item: any) => {
     if (item.type === 'app') openWindow(item.id, item.title, item.icon);
     else if (item.type === 'file') {
-       openWindow('notepad', item.title, 'https://img.icons8.com/color/512/notepad.png', item.id);
+       openWindow('notepad', item.title, '/icons/notepad.png', item.id);
     }
     setIsOpen(false);
     setInput('');

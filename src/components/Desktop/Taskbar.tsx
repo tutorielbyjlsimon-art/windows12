@@ -43,15 +43,22 @@ export default function Taskbar({ toggleStart, isStartOpen }: TaskbarProps) {
   };
 
   const pinnedApps = [
-    { id: 'browser', title: 'Edge', icon: 'https://upload.wikimedia.org/wikipedia/commons/f/f6/Microsoft_Edge_logo_%282019%29.svg' },
-    { id: 'explorer', title: 'Files', icon: 'https://upload.wikimedia.org/wikipedia/commons/a/af/Windows_11_File_Explorer_Icon.svg' },
-    { id: 'settings', title: 'Settings', icon: 'https://upload.wikimedia.org/wikipedia/commons/e/ed/Windows_Settings_icon.svg' },
-    { id: 'weather', title: 'Weather', icon: 'https://upload.wikimedia.org/wikipedia/commons/1/16/Windows_11_Weather_icon.svg' },
+    { id: 'browser', title: 'Edge', icon: '/icons/edge.png' },
+    { id: 'explorer', title: 'Files', icon: '/icons/explorer.png' },
+    { id: 'settings', title: 'Settings', icon: '/icons/settings.png' },
+    { id: 'weather', title: 'Weather', icon: '/icons/weather.png' },
   ];
 
   return (
     <div className="taskbar glass">
       <div className="taskbar-left">
+        <button 
+          className={clsx('taskbar-btn copilot-btn')}
+          onClick={() => openWindow('copilot-chat', 'Copilot IA', '/icons/copilot.png')}
+          title="Copilot IA"
+        >
+          <img src="/icons/copilot.png" style={{ width: '22px', height: '22px' }} alt="Copilot" />
+        </button>
         <button 
           className={clsx('taskbar-btn start-btn', { active: isStartOpen })}
           onClick={(e) => {
@@ -60,7 +67,7 @@ export default function Taskbar({ toggleStart, isStartOpen }: TaskbarProps) {
           }}
           title="Démarrer"
         >
-          <img src="https://upload.wikimedia.org/wikipedia/commons/c/c2/Windows_logo_-_2021.svg" style={{ width: '22px', height: '22px' }} alt="Start" />
+          <img src="/icons/windows.png" style={{ width: '22px', height: '22px' }} alt="Start" />
         </button>
       </div>
 
@@ -77,7 +84,7 @@ export default function Taskbar({ toggleStart, isStartOpen }: TaskbarProps) {
         ))}
 
         {windows.map(win => {
-          if (pinnedApps.some(a => a.id === win.id)) return null;
+          if (pinnedApps.some(a => a.id === win.id) || win.id === 'copilot-chat') return null;
           return (
             <button 
               key={win.id}
