@@ -114,7 +114,7 @@ export default function Desktop() {
       <Spotlight />
 
       {/* Desktop Icons Layer */}
-      <div className="desktop-icons-container" style={{ position: 'absolute', inset: 0, padding: '20px', zIndex: 1, pointerEvents: 'none' }}>
+      <div className="desktop-icons-container" style={{ position: 'absolute', inset: 0, padding: '20px', zIndex: 10, pointerEvents: 'none' }}>
         {desktopIcons.map(icon => (
           <div key={icon.id} style={{ pointerEvents: 'auto' }}>
             <DesktopIcon icon={icon} />
@@ -122,7 +122,7 @@ export default function Desktop() {
         ))}
       </div>
       
-      <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%', zIndex: 2 }}>
+      <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%', zIndex: 20, pointerEvents: 'none' }}>
         <WindowManager />
       </div>
       

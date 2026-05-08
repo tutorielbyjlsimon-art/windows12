@@ -37,11 +37,7 @@ export default function DesktopIcon({ icon }: Props) {
           updateIconPosition(icon.id, x, y);
         }}
         onTap={() => {
-          if (isSelected) {
-            handleAction();
-          } else {
-            setIsSelected(true);
-          }
+          handleAction();
         }}
         initial={{ x: icon.x, y: icon.y }}
         animate={{ 
@@ -49,6 +45,8 @@ export default function DesktopIcon({ icon }: Props) {
           y: icon.y,
           scale: isSelected ? 1.05 : 1
         }}
+        onMouseEnter={() => setIsSelected(true)}
+        onMouseLeave={() => setIsSelected(false)}
         style={{
           position: 'absolute',
           width: '90px',
@@ -62,7 +60,8 @@ export default function DesktopIcon({ icon }: Props) {
           borderRadius: '12px',
           background: isSelected ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
           border: isSelected ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid transparent',
-          transition: 'background 0.2s, border 0.2s'
+          transition: 'background 0.2s, border 0.2s',
+          pointerEvents: 'auto'
         }}
         className="desktop-icon"
       >
