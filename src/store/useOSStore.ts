@@ -96,7 +96,7 @@ export const useOSStore = create<OSState>()(
       isLoggedIn: false,
       isLocked: false,
       theme: 'dark',
-      wallpaper: 'https://images.unsplash.com/photo-1477346611705-65d1883cee1e?auto=format&fit=crop&q=80&w=2000',
+      wallpaper: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=2000',
       accentColor: '#0078d4',
       transparency: 0.8,
       showVirtualCursor: false,
@@ -116,8 +116,8 @@ export const useOSStore = create<OSState>()(
       toggleTheme: () => set((state) => {
         const nextTheme = state.theme === 'light' ? 'dark' : 'light';
         const nextWallpaper = nextTheme === 'light' 
-          ? 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80&w=2000'
-          : 'https://images.unsplash.com/photo-1477346611705-65d1883cee1e?auto=format&fit=crop&q=80&w=2000';
+          ? 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=2000'
+          : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=2000';
         return { theme: nextTheme, wallpaper: nextWallpaper };
       }),
       setWallpaper: (url) => set({ wallpaper: url }),
@@ -219,7 +219,7 @@ export const useOSStore = create<OSState>()(
       }))
     }),
     {
-      name: 'windows12-storage-v5',
+      name: 'windows12-storage-v6',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ 
         theme: state.theme, 

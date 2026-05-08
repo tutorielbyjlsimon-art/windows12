@@ -20,12 +20,12 @@ export default function Spotlight() {
   }, []);
 
   const apps = [
-    { id: 'browser', title: 'Edge', icon: 'https://upload.wikimedia.org/wikipedia/commons/f/f6/Microsoft_Edge_logo_%282019%29.svg' },
-    { id: 'explorer', title: 'Files', icon: 'https://upload.wikimedia.org/wikipedia/commons/a/af/Windows_11_File_Explorer_Icon.svg' },
-    { id: 'settings', title: 'Settings', icon: 'https://upload.wikimedia.org/wikipedia/commons/e/ed/Windows_Settings_icon.svg' },
-    { id: 'weather', title: 'Weather', icon: 'https://upload.wikimedia.org/wikipedia/commons/1/16/Windows_11_Weather_icon.svg' },
-    { id: 'gallery', title: 'Photos', icon: 'https://upload.wikimedia.org/wikipedia/commons/a/aa/Windows_11_Photos_icon.svg' },
-    { id: 'terminal', title: 'Terminal', icon: 'https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_Terminal_logo.svg' },
+    { id: 'browser', title: 'Edge', icon: 'https://img.icons8.com/color/512/microsoft-edge.png' },
+    { id: 'explorer', title: 'Files', icon: 'https://img.icons8.com/color/512/folder-invoices--v1.png' },
+    { id: 'settings', title: 'Settings', icon: 'https://img.icons8.com/color/512/settings--v1.png' },
+    { id: 'weather', title: 'Weather', icon: 'https://img.icons8.com/color/512/partly-cloudy-day--v1.png' },
+    { id: 'gallery', title: 'Photos', icon: 'https://img.icons8.com/color/512/photos.png' },
+    { id: 'terminal', title: 'Terminal', icon: 'https://img.icons8.com/color/512/console.png' },
   ];
 
   const handleAiAsk = async () => {
@@ -50,7 +50,7 @@ export default function Spotlight() {
   const handleLaunch = (item: any) => {
     if (item.type === 'app') openWindow(item.id, item.title, item.icon);
     else if (item.type === 'file') {
-       openWindow('notepad', item.title, 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Windows_Notepad_Icon.svg', item.id);
+       openWindow('notepad', item.title, 'https://img.icons8.com/color/512/notepad.png', item.id);
     }
     setIsOpen(false);
     setInput('');

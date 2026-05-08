@@ -9,10 +9,14 @@ export default function SettingsMock() {
   } = useOSStore();
 
   const wallpapers = [
-    { name: 'Abstract Purple', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop' },
-    { name: 'Modern Blue', url: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=2574&auto=format&fit=crop' },
-    { name: 'Mountain Lake', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2670&auto=format&fit=crop' },
-    { name: 'Cyberpunk City', url: 'https://images.unsplash.com/photo-1519608487953-e999c86e7455?q=80&w=2670&auto=format&fit=crop' },
+    { name: 'Dark Abstract', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=2000' },
+    { name: 'Light Flow', url: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=2000' },
+    { name: 'Cyber Neon', url: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=2000' },
+    { name: 'Deep Space', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2000' },
+    { name: 'Minimal Mountain', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2000' },
+    { name: 'Ocean Mist', url: 'https://images.unsplash.com/photo-1505118380757-91f5f45d8de4?auto=format&fit=crop&q=80&w=2000' },
+    { name: 'Sunset Peak', url: 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&q=80&w=2000' },
+    { name: 'Urban Night', url: 'https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&q=80&w=2000' },
   ];
 
   const colors = ['#0078d4', '#4cc2ff', '#00cc6a', '#ffb900', '#d83b01', '#e81123', '#b4009e', '#5c2d91'];
@@ -86,13 +90,13 @@ export default function SettingsMock() {
           </div>
         </section>
 
-        {/* Mobile / Mouse Section */}
+        {/* Interaction Section */}
         <section className="settings-section">
           <h3>Interaction</h3>
           <div className="settings-row">
             <div>
               <p style={{ fontWeight: 500 }}>Virtual Cursor</p>
-              <p style={{ fontSize: '12px', opacity: 0.6 }}>{isMobile ? "Recommandé pour votre appareil mobile" : "Optionnel pour ordinateur"}</p>
+              <p style={{ fontSize: '12px', opacity: 0.6 }}>{isMobile ? "Recommandé pour mobile" : "Optionnel pour ordinateur"}</p>
             </div>
             <button onClick={toggleVirtualCursor} className="settings-btn">
               {showVirtualCursor ? "Désactiver" : "Activer"}
@@ -102,7 +106,7 @@ export default function SettingsMock() {
 
         {/* Wallpaper Section */}
         <section className="settings-section">
-          <h3>Wallpaper</h3>
+          <h3>Wallpaper Gallery</h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginTop: '10px' }}>
             {wallpapers.map(wp => (
               <div 
@@ -110,7 +114,7 @@ export default function SettingsMock() {
                 onClick={() => setWallpaper(wp.url)}
                 className={`wallpaper-card ${wallpaper === wp.url ? 'active' : ''}`}
               >
-                <div style={{ height: '100px', background: `url(${wp.url}) center/cover` }} />
+                <div style={{ height: '120px', background: `url(${wp.url}) center/cover` }} />
                 <div className="label">{wp.name}</div>
               </div>
             ))}
@@ -125,8 +129,8 @@ export default function SettingsMock() {
           .settings-nav-btn { display: flex; alignItems: center; gap: 12px; padding: 12px; borderRadius: 8px; background: transparent; border: none; color: inherit; textAlign: left; cursor: pointer; width: 100%; opacity: 0.7; transition: all 0.2s; }
           .settings-nav-btn.active { background: var(--hover-bg); opacity: 1; font-weight: 600; }
           .wallpaper-card { cursor: pointer; borderRadius: 12px; overflow: hidden; border: 2px solid transparent; transition: all 0.2s; }
-          .wallpaper-card.active { border-color: var(--accent-color); }
-          .wallpaper-card .label { padding: 8px; font-size: 12px; background: rgba(255,255,255,0.05); }
+          .wallpaper-card.active { border-color: var(--accent-color); transform: scale(1.02); }
+          .wallpaper-card .label { padding: 8px; font-size: 12px; background: rgba(255,255,255,0.05); text-align: center; }
         `}</style>
       </div>
     </div>
