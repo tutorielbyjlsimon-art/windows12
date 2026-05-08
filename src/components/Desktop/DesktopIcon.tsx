@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useOSStore } from '../../store/useOSStore';
 import type { DesktopIcon as IDesktopIcon } from '../../store/useOSStore';
@@ -8,20 +8,23 @@ interface Props {
 }
 
 export default function DesktopIcon({ icon }: Props) {
-  const { openWindow, updateIconPosition } = useOSStore();
+  const { openWindow, updateIconPosition, activeWindowId } = useOSStore();
   const [isSelected, setIsSelected] = useState(false);
 
-  const handleAction = () => {
-    if (icon.type === 'app' && icon.appId) {
-      openWindow(icon.appId, icon.name, icon.icon);
-    } else if (icon.type === 'file' && icon.fileId) {
-      openWindow('notepad', icon.name, 'icons/notepad.png', icon.fileId);
-    } else if (icon.type === 'folder' && icon.fileId) {
-      openWindow('explorer', icon.name, icon.icon);
-    } else {
-      openWindow('explorer', icon.name, icon.icon);
-    }
+  // Close selection when clicking elsewhere (handled by Desktop.tsx onClick, but we can also use activeWindowId)
+  useEffect(() => {
+    if (activeWindowId) setIsSelected(false);
+  }, [activeWindowId]);
+
+  const handleOpen = (e: React.MouseEvent | React.TouchEvent) => {
+    e.stopPropagation();
+    openWindow(icon.appId || icon.id, icon.name, icon.icon, icon.fileId);
     setIsSelected(false);
+  };
+
+  const handleSelect = (e: React.MouseEvent | React.TouchEvent) => {
+    e.stopPropagation();
+    setIsSelected(true);
   };
 
   return (
@@ -31,22 +34,18 @@ export default function DesktopIcon({ icon }: Props) {
         dragMomentum={false}
         onDragStart={() => setIsSelected(true)}
         onDragEnd={(_, info) => {
-          // Simple grid snapping (100px)
           const x = Math.round(info.point.x / 100) * 100 + 20;
           const y = Math.round(info.point.y / 100) * 100 + 20;
           updateIconPosition(icon.id, x, y);
         }}
-        onTap={() => {
-          handleAction();
-        }}
+        onClick={handleSelect}
+        onDoubleClick={handleOpen}
         initial={{ x: icon.x, y: icon.y }}
         animate={{ 
           x: icon.x, 
           y: icon.y,
-          scale: isSelected ? 1.05 : 1
+          scale: isSelected ? 1.02 : 1
         }}
-        onMouseEnter={() => setIsSelected(true)}
-        onMouseLeave={() => setIsSelected(false)}
         style={{
           position: 'absolute',
           width: '90px',
@@ -57,10 +56,9 @@ export default function DesktopIcon({ icon }: Props) {
           cursor: 'pointer',
           zIndex: 10,
           padding: '10px',
-          borderRadius: '12px',
+          borderRadius: '8px',
           background: isSelected ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
           border: isSelected ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid transparent',
-          transition: 'background 0.2s, border 0.2s',
           pointerEvents: 'auto'
         }}
         className="desktop-icon"
@@ -91,6 +89,11 @@ export default function DesktopIcon({ icon }: Props) {
           {icon.name}
         </span>
       </motion.div>
+      <style>{`
+        .desktop-icon:hover {
+          background: ${isSelected ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.08)'};
+        }
+      `}</style>
     </>
   );
 }
