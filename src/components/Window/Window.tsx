@@ -99,7 +99,7 @@ export default function Window({ window: win }: WindowProps) {
       }}
       exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
       transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-      style={{ zIndex: win.zIndex, position: 'absolute' }}
+      style={{ zIndex: win.zIndex, position: 'absolute', pointerEvents: 'auto' }}
       onPointerDown={handlePointerDown}
     >
       <div className="window-header" onDoubleClick={() => maximizeWindow(win.id)}>
