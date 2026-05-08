@@ -109,10 +109,10 @@ const DEFAULT_FS: VFSItem[] = [
 ];
 
 const DEFAULT_ICONS: DesktopIcon[] = [
-  { id: 'icon-pc', name: 'Ce PC', icon: 'icons/explorer.png', x: 250, y: 40, type: 'app', appId: 'explorer' },
-  { id: 'icon-bin', name: 'Corbeille', icon: 'https://img.icons8.com/fluency/512/recycle-bin.png', x: 250, y: 140, type: 'folder' },
-  { id: 'icon-edge', name: 'Edge', icon: 'icons/edge.png', x: 250, y: 240, type: 'app', appId: 'browser' },
-  { id: 'icon-settings', name: 'Settings', icon: 'icons/settings.png', x: 250, y: 340, type: 'app', appId: 'settings' },
+  { id: 'icon-pc', name: 'Ce PC', icon: 'icons/explorer.png', x: 500, y: 40, type: 'app', appId: 'explorer' },
+  { id: 'icon-bin', name: 'Corbeille', icon: 'https://img.icons8.com/fluency/512/recycle-bin.png', x: 500, y: 140, type: 'folder' },
+  { id: 'icon-edge', name: 'Edge', icon: 'icons/edge.png', x: 500, y: 240, type: 'app', appId: 'browser' },
+  { id: 'icon-settings', name: 'Settings', icon: 'icons/settings.png', x: 500, y: 340, type: 'app', appId: 'settings' },
 ];
 
 export const useOSStore = create<OSState>()(
@@ -162,12 +162,15 @@ export const useOSStore = create<OSState>()(
         const maxZ = Math.max(0, ...state.windows.map(w => w.zIndex));
         
         if (existing) {
-          return {
-            windows: state.windows.map(w => 
-              w.id === windowId ? { ...w, isMinimized: false, zIndex: maxZ + 1 } : w
-            ),
-            activeWindowId: windowId
-          };
+          if (existing.isMinimized) {
+            return {
+              windows: state.windows.map(w => 
+                w.id === windowId ? { ...w, isMinimized: false, zIndex: maxZ + 1 } : w
+              ),
+              activeWindowId: windowId
+            };
+          }
+          return { activeWindowId: windowId };
         }
         
         return {
@@ -229,21 +232,18 @@ export const useOSStore = create<OSState>()(
         notifications: state.notifications.filter(n => n.id !== id)
       })),
 
-      // Desktop Icon Actions
       updateIconPosition: (id, x, y) => set((state) => ({
         desktopIcons: state.desktopIcons.map(icon => icon.id === id ? { ...icon, x, y } : icon)
       })),
 
       addDesktopIcon: (icon) => set((state) => {
-        // Find empty spot on grid (basic)
-        const x = 20;
-        const y = 20 + (state.desktopIcons.length * 100);
+        const x = 500;
+        const y = 40 + (state.desktopIcons.length * 100);
         return {
           desktopIcons: [...state.desktopIcons, { ...icon, x, y }]
         };
       }),
 
-      // FS Actions
       createItem: (item) => {
         const id = Math.random().toString(36).substr(2, 9);
         set((state) => ({
@@ -266,7 +266,7 @@ export const useOSStore = create<OSState>()(
       }))
     }),
     {
-      name: 'windows12-storage-v7',
+      name: 'windows12-storage-v9',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ 
         theme: state.theme, 
