@@ -8,6 +8,7 @@ import ActionCenter from './ActionCenter';
 import DesktopWidgets from './DesktopWidgets';
 import Spotlight from './Spotlight';
 import DesktopIcon from './DesktopIcon';
+import TaskView from './TaskView';
 
 export default function Desktop() {
   const [isStartOpen, setIsStartOpen] = useState(false);
@@ -16,7 +17,7 @@ export default function Desktop() {
   const { 
     wallpaper, isActionCenterOpen, closeActionCenter, 
     toggleTheme, lock, addNotification, desktopIcons,
-    createItem, addDesktopIcon
+    createItem, addDesktopIcon, toggleTaskView, isTaskViewOpen
   } = useOSStore();
 
   const toggleStart = () => setIsStartOpen(prev => !prev);
@@ -85,6 +86,18 @@ export default function Desktop() {
     img.onload = () => setIsImageLoaded(true);
   }, [wallpaper]);
 
+  // Handle Alt+Tab
+  useEffect(() => {
+    const handleAltTab = (e: KeyboardEvent) => {
+      if (e.key === 'Tab' && e.altKey) {
+        e.preventDefault();
+        toggleTaskView();
+      }
+    };
+    window.addEventListener('keydown', handleAltTab);
+    return () => window.removeEventListener('keydown', handleAltTab);
+  }, [toggleTaskView]);
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -112,6 +125,10 @@ export default function Desktop() {
 
       <DesktopWidgets />
       <Spotlight />
+      
+      <AnimatePresence>
+        {isTaskViewOpen && <TaskView />}
+      </AnimatePresence>
 
       {/* Desktop Icons Layer */}
       <div className="desktop-icons-container" style={{ position: 'absolute', inset: 0, padding: '20px', zIndex: 10, pointerEvents: 'none' }}>

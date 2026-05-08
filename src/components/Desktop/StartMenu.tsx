@@ -8,7 +8,7 @@ interface StartMenuProps {
 }
 
 export default function StartMenu({ closeStart }: StartMenuProps) {
-  const { logout, openWindow } = useOSStore();
+  const { logout, openWindow, lock } = useOSStore();
 
   const handleAppLaunch = (id: string, title: string, icon: string) => {
     openWindow(id, title, icon);
@@ -18,12 +18,14 @@ export default function StartMenu({ closeStart }: StartMenuProps) {
   const apps = [
     { id: 'browser', title: 'Edge', icon: 'icons/edge.png' },
     { id: 'explorer', title: 'Files', icon: 'icons/explorer.png' },
-    { id: 'settings', title: 'Settings', icon: 'icons/settings.png' },
-    { id: 'weather', title: 'Weather', icon: 'icons/weather.png' },
     { id: 'gallery', title: 'Photos', icon: 'icons/photos.png' },
+    { id: 'settings', title: 'Settings', icon: 'icons/settings.png' },
+    { id: 'paint', title: 'Paint', icon: 'https://img.icons8.com/fluency/512/paint-palette.png' },
+    { id: 'minesweeper', title: 'Mines', icon: 'https://img.icons8.com/fluency/512/mine-sweeper.png' },
     { id: 'terminal', title: 'Terminal', icon: 'icons/terminal.png' },
     { id: 'calculator', title: 'Calc', icon: 'icons/calculator.png' },
     { id: 'notepad', title: 'Notepad', icon: 'icons/notepad.png' },
+    { id: 'weather', title: 'Weather', icon: 'icons/weather.png' },
   ];
 
   return (
@@ -59,9 +61,14 @@ export default function StartMenu({ closeStart }: StartMenuProps) {
           <div className="user-avatar">AD</div>
           <span>Administrateur</span>
         </div>
-        <button className="power-btn" onClick={logout} title="Déconnexion">
-          <Power size={18} />
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button className="power-btn" onClick={lock} title="Verrouiller (Win+L)">
+            Verrouiller
+          </button>
+          <button className="power-btn" onClick={logout} title="Déconnexion">
+            <Power size={18} />
+          </button>
+        </div>
       </div>
     </motion.div>
   );

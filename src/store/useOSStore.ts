@@ -266,7 +266,7 @@ export const useOSStore = create<OSState>()(
       }))
     }),
     {
-      name: 'windows12-storage-v9',
+      name: 'windows12-storage-v10',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ 
         theme: state.theme, 

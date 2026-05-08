@@ -1,8 +1,8 @@
-import { useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useOSStore } from '../../store/useOSStore';
 import type { AppWindow } from '../../store/useOSStore';
-import { Minus, Square, X } from 'lucide-react';
+import { Minus, Square, X, Layout } from 'lucide-react';
 import BrowserMock from './Apps/BrowserMock';
 import SettingsMock from './Apps/SettingsMock';
 import WeatherMock from './Apps/WeatherMock';
@@ -11,6 +11,8 @@ import CalculatorMock from './Apps/CalculatorMock';
 import FileExplorerMock from './Apps/FileExplorerMock';
 import NotepadMock from './Apps/NotepadMock';
 import GalleryMock from './Apps/GalleryMock';
+import MinesweeperMock from './Apps/MinesweeperMock';
+import PaintMock from './Apps/PaintMock';
 import ErrorBoundary from '../ErrorBoundary';
 import './Window.css';
 
@@ -19,8 +21,9 @@ interface WindowProps {
 }
 
 export default function Window({ window: win }: WindowProps) {
-  const { closeWindow, minimizeWindow, maximizeWindow, focusWindow, activeWindowId } = useOSStore();
+  const { closeWindow, minimizeWindow, maximizeWindow, focusWindow, activeWindowId, updateWindowDimensions } = useOSStore();
   const windowRef = useRef<HTMLDivElement>(null);
+  const [showSnapAssist, setShowSnapAssist] = useState(false);
 
   if (win.isMinimized) return null;
 
@@ -41,7 +44,8 @@ export default function Window({ window: win }: WindowProps) {
       case 'notepad': return <img src="icons/notepad.png" style={{ width: '16px', height: '16px' }} alt="" />;
       case 'explorer': return <img src="icons/explorer.png" style={{ width: '16px', height: '16px' }} alt="" />;
       case 'gallery': return <img src="icons/photos.png" style={{ width: '16px', height: '16px' }} alt="" />;
-      case 'copilot-chat': return <img src="icons/copilot.png" style={{ width: '16px', height: '16px' }} alt="" />;
+      case 'minesweeper': return <img src="https://img.icons8.com/fluency/512/mine-sweeper.png" style={{ width: '16px', height: '16px' }} alt="" />;
+      case 'paint': return <img src="https://img.icons8.com/fluency/512/paint-palette.png" style={{ width: '16px', height: '16px' }} alt="" />;
       default: return null;
     }
   };
@@ -56,24 +60,24 @@ export default function Window({ window: win }: WindowProps) {
       case 'explorer': return <FileExplorerMock />;
       case 'notepad': return <NotepadMock fileId={win.fileId} />;
       case 'gallery': return <GalleryMock />;
-      case 'copilot-chat': return (
-        <div className="window-content-inner" style={{ background: '#0f0f0f', color: 'white', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-          <img src="icons/copilot.png" style={{ width: '64px', height: '64px', marginBottom: '20px' }} alt="Copilot" />
-          <h2>Windows Copilot IA</h2>
-          <p style={{ opacity: 0.7, maxWidth: '400px', marginTop: '10px' }}>Votre assistant personnel intelligent est prêt. Posez-moi n'importe quelle question sur Windows 12.</p>
-          <div style={{ marginTop: '30px', width: '80%', padding: '15px', background: 'rgba(255,255,255,0.1)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
-            Tapez un message...
-          </div>
-        </div>
-      );
+      case 'minesweeper': return <MinesweeperMock />;
+      case 'paint': return <PaintMock />;
       default:
         return (
           <div className="window-content-inner">
             <h1>{win.title}</h1>
-            <p style={{ marginTop: '20px', opacity: 0.7 }}>This is a placeholder for the {win.title} application.</p>
+            <p style={{ marginTop: '20px', opacity: 0.7 }}>Contenu simulé pour {win.title}.</p>
           </div>
         );
     }
+  };
+
+  const handleSnap = (type: 'left' | 'right' | 'top') => {
+    const { innerWidth } = window;
+    if (type === 'left') updateWindowDimensions(win.id, 0, 0, '50%', 'calc(100% - 72px)');
+    else if (type === 'right') updateWindowDimensions(win.id, innerWidth / 2, 0, '50%', 'calc(100% - 72px)');
+    else if (type === 'top') maximizeWindow(win.id);
+    setShowSnapAssist(false);
   };
 
   return (
@@ -97,23 +101,6 @@ export default function Window({ window: win }: WindowProps) {
       transition={{ type: 'spring', damping: 25, stiffness: 200 }}
       style={{ zIndex: win.zIndex, position: 'absolute' }}
       onPointerDown={handlePointerDown}
-      onDragEnd={(_, info) => {
-        if (!win.isMaximized) {
-          const { x, y } = info.point;
-          const { innerWidth } = window;
-          const offset = 20; // Snap sensitivity
-          
-          if (x < offset) {
-            useOSStore.getState().updateWindowDimensions(win.id, 0, 0, '50%', `calc(100% - 72px)`);
-          } else if (x > innerWidth - offset) {
-            useOSStore.getState().updateWindowDimensions(win.id, innerWidth / 2, 0, '50%', `calc(100% - 72px)`);
-          } else if (y < offset) {
-            useOSStore.getState().maximizeWindow(win.id);
-          } else {
-            useOSStore.getState().updateWindowDimensions(win.id, x, y, 900, 600);
-          }
-        }
-      }}
     >
       <div className="window-header" onDoubleClick={() => maximizeWindow(win.id)}>
         <div className="window-title">
@@ -124,9 +111,30 @@ export default function Window({ window: win }: WindowProps) {
           <button className="control-btn" onClick={(e) => { e.stopPropagation(); minimizeWindow(win.id); }}>
             <Minus size={16} />
           </button>
-          <button className="control-btn" onClick={(e) => { e.stopPropagation(); maximizeWindow(win.id); }}>
-            <Square size={14} />
-          </button>
+          
+          <div style={{ position: 'relative', height: '100%' }} onMouseEnter={() => setShowSnapAssist(true)} onMouseLeave={() => setShowSnapAssist(false)}>
+            <button className="control-btn" onClick={(e) => { e.stopPropagation(); maximizeWindow(win.id); }}>
+              <Square size={14} />
+            </button>
+            <AnimatePresence>
+              {showSnapAssist && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="snap-assist-menu glass"
+                  style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', width: '160px', padding: '12px', borderRadius: '12px', zIndex: 100 }}
+                >
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    <div onClick={() => handleSnap('left')} style={{ height: '40px', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)', borderRadius: '4px', cursor: 'pointer' }} title="Snap Gauche" />
+                    <div onClick={() => handleSnap('right')} style={{ height: '40px', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)', borderRadius: '4px', cursor: 'pointer' }} title="Snap Droite" />
+                    <div onClick={() => handleSnap('top')} style={{ gridColumn: 'span 2', height: '20px', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)', borderRadius: '4px', cursor: 'pointer' }} title="Maximiser" />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           <button className="control-btn close" onClick={(e) => { e.stopPropagation(); closeWindow(win.id); }}>
             <X size={18} />
           </button>
