@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { useOSStore, DesktopIcon as IDesktopIcon } from '../../store/useOSStore';
+import { useOSStore } from '../../store/useOSStore';
+import type { DesktopIcon as IDesktopIcon } from '../../store/useOSStore';
 
 interface Props {
   icon: IDesktopIcon;
