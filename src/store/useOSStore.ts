@@ -109,10 +109,10 @@ const DEFAULT_FS: VFSItem[] = [
 ];
 
 const DEFAULT_ICONS: DesktopIcon[] = [
-  { id: 'icon-pc', name: 'Ce PC', icon: 'icons/explorer.png', x: 20, y: 20, type: 'app', appId: 'explorer' },
-  { id: 'icon-bin', name: 'Corbeille', icon: 'https://img.icons8.com/fluency/512/recycle-bin.png', x: 20, y: 120, type: 'folder' },
-  { id: 'icon-edge', name: 'Edge', icon: 'icons/edge.png', x: 20, y: 220, type: 'app', appId: 'browser' },
-  { id: 'icon-settings', name: 'Settings', icon: 'icons/settings.png', x: 20, y: 320, type: 'app', appId: 'settings' },
+  { id: 'icon-pc', name: 'Ce PC', icon: 'icons/explorer.png', x: 250, y: 40, type: 'app', appId: 'explorer' },
+  { id: 'icon-bin', name: 'Corbeille', icon: 'https://img.icons8.com/fluency/512/recycle-bin.png', x: 250, y: 140, type: 'folder' },
+  { id: 'icon-edge', name: 'Edge', icon: 'icons/edge.png', x: 250, y: 240, type: 'app', appId: 'browser' },
+  { id: 'icon-settings', name: 'Settings', icon: 'icons/settings.png', x: 250, y: 340, type: 'app', appId: 'settings' },
 ];
 
 export const useOSStore = create<OSState>()(
