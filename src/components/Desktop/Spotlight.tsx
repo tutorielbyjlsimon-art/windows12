@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useOSStore } from '../../store/useOSStore';
-import { Search, FileText, Sparkles, Send, User } from 'lucide-react';
+import { Search, FileText, Sparkles, Send } from 'lucide-react';
 
 export default function Spotlight() {
   const { fs, openWindow, executeSystemAction } = useOSStore();
@@ -11,6 +11,8 @@ export default function Spotlight() {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  const lang = navigator.language.startsWith('fr') ? 'fr' : 'en';
+
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 's' && e.metaKey) { e.preventDefault(); setIsOpen(prev => !prev); }
@@ -19,6 +21,15 @@ export default function Spotlight() {
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, []);
+
+  useEffect(() => {
+    if (isOpen && chat.length === 0) {
+      const welcome = lang === 'fr' 
+        ? "Hey ! Salut, bienvenue dans Windows 12. Je suis votre assistant intelligent."
+        : "Hey! Hi, welcome to Windows 12. I am your intelligent assistant.";
+      setChat([{ role: 'ai', content: welcome }]);
+    }
+  }, [isOpen, lang, chat.length]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -36,50 +47,46 @@ export default function Spotlight() {
   const processAICommand = (input: string) => {
     const cmd = input.toLowerCase();
     
-    // Command Parsing (Telegram style)
     if (cmd.startsWith('/theme ')) {
       const theme = cmd.split(' ')[1];
       executeSystemAction('set_theme', theme);
-      return `Thème changé en ${theme}.`;
+      return lang === 'fr' ? `Thème changé en ${theme}.` : `Theme changed to ${theme}.`;
     }
     if (cmd.startsWith('/wallpaper ')) {
       const url = input.split(' ')[1];
       executeSystemAction('set_wallpaper', url);
-      return "Fond d'écran mis à jour.";
+      return lang === 'fr' ? "Fond d'écran mis à jour." : "Wallpaper updated.";
     }
     if (cmd.startsWith('/lock')) {
       executeSystemAction('lock');
-      return "Système verrouillé.";
+      return lang === 'fr' ? "Système verrouillé." : "System locked.";
     }
     if (cmd.startsWith('/open ')) {
       const appName = cmd.split(' ')[1];
       const app = apps.find(a => a.title.toLowerCase() === appName);
       if (app) {
         executeSystemAction('open_app', app);
-        return `Ouverture de ${app.title}...`;
+        return lang === 'fr' ? `Ouverture de ${app.title}...` : `Opening ${app.title}...`;
       }
-      return `Application "${appName}" non trouvée.`;
+      return lang === 'fr' ? `Application "${appName}" non trouvée.` : `App "${appName}" not found.`;
     }
 
-    // Natural Language basic detection
     if (cmd.includes('sombre') || cmd.includes('dark')) {
       executeSystemAction('set_theme', 'dark');
-      return "Je passe en mode sombre pour vous.";
+      return lang === 'fr' ? "Je passe en mode sombre pour vous." : "Switching to dark mode for you.";
     }
     if (cmd.includes('clair') || cmd.includes('light')) {
       executeSystemAction('set_theme', 'light');
-      return "Bien sûr, voici le mode clair.";
+      return lang === 'fr' ? "Bien sûr, voici le mode clair." : "Sure, here is the light mode.";
     }
-    if (cmd.includes('verrouille')) {
+    if (cmd.includes('verrouille') || cmd.includes('lock')) {
       executeSystemAction('lock');
-      return "Je verrouille votre session.";
-    }
-    if (cmd.includes('météo')) {
-      executeSystemAction('open_app', apps.find(a => a.id === 'weather'));
-      return "Voici la météo actuelle.";
+      return lang === 'fr' ? "Je verrouille votre session." : "Locking your session.";
     }
 
-    return "Je suis Copilot IA. Je peux changer le thème, verrouiller le PC, ouvrir des apps ou rechercher vos fichiers. Essayez '/theme light' ou '/lock'.";
+    return lang === 'fr' 
+      ? "Je peux changer le thème, verrouiller le PC, ouvrir des apps ou rechercher vos fichiers. Essayez '/theme light' ou '/lock'."
+      : "I can change the theme, lock the PC, open apps or search your files. Try '/theme light' or '/lock'.";
   };
 
   const handleSend = async () => {
@@ -122,23 +129,22 @@ export default function Spotlight() {
           <Sparkles size={24} color="var(--accent-color)" />
           <input 
             autoFocus 
-            placeholder="Demandez n'importe quoi à Copilot (ex: /theme light)..."
+            placeholder={lang === 'fr' ? "Demandez à Copilot..." : "Ask Copilot..."}
             value={query}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             style={{ flex: 1, background: 'none', border: 'none', color: 'inherit', fontSize: '18px', outline: 'none' }}
           />
           <button onClick={handleSend} style={{ background: 'var(--accent-color)', border: 'none', color: 'white', padding: '10px 20px', borderRadius: '12px', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Send size={16} /> Envoyer
+            <Send size={16} /> {lang === 'fr' ? 'Envoyer' : 'Send'}
           </button>
         </div>
 
         <div style={{ display: 'flex', height: '500px' }}>
-          {/* Main Search Results */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '20px', borderRight: '1px solid var(--glass-border)' }}>
             {query ? (
               <>
-                <h3 style={{ fontSize: '11px', opacity: 0.5, marginBottom: '15px', textTransform: 'uppercase' }}>Résultats de recherche</h3>
+                <h3 style={{ fontSize: '11px', opacity: 0.5, marginBottom: '15px', textTransform: 'uppercase' }}>{lang === 'fr' ? 'Résultats' : 'Results'}</h3>
                 {results.map((res: any, i) => (
                   <div key={i} onClick={() => openWindow(res.id, res.title, res.icon)} style={{ padding: '12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '15px', cursor: 'pointer' }} className="search-result-item">
                      {res.type === 'app' ? <img src={res.icon} style={{ width: '32px', height: '32px' }} alt="" /> : <FileText size={32} opacity={0.7} />}
@@ -152,27 +158,16 @@ export default function Spotlight() {
             ) : (
               <div style={{ padding: '40px', textAlign: 'center', opacity: 0.5 }}>
                  <Search size={48} style={{ marginBottom: '20px', opacity: 0.2 }} />
-                 <p>Tapez pour rechercher ou discuter avec l'IA</p>
+                 <p>{lang === 'fr' ? 'Recherche ou IA' : 'Search or AI'}</p>
               </div>
             )}
           </div>
 
-          {/* AI Chat History */}
           <div style={{ width: '350px', background: 'rgba(255,255,255,0.02)', display: 'flex', flexDirection: 'column' }}>
             <div style={{ padding: '15px 20px', borderBottom: '1px solid var(--glass-border)', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-               <Sparkles size={16} color="var(--accent-color)" /> Conversation Copilot
+               <Sparkles size={16} color="var(--accent-color)" /> Copilot Chat
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
-               {chat.length === 0 && (
-                 <div style={{ fontSize: '12px', opacity: 0.5, lineHeight: '1.5' }}>
-                   Bonjour ! Je suis votre assistant. Je peux piloter l'OS.<br/><br/>
-                   Commandes utiles :<br/>
-                   • /theme dark/light<br/>
-                   • /lock<br/>
-                   • /open edge<br/>
-                   • /wallpaper [url]
-                 </div>
-               )}
                {chat.map((msg, i) => (
                  <div key={i} style={{ 
                    alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
