@@ -7,12 +7,17 @@ import StartMenu from './StartMenu';
 import ActionCenter from './ActionCenter';
 import DesktopWidgets from './DesktopWidgets';
 import Spotlight from './Spotlight';
+import DesktopIcon from './DesktopIcon';
 
 export default function Desktop() {
   const [isStartOpen, setIsStartOpen] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number, y: number } | null>(null);
-  const { wallpaper, isActionCenterOpen, closeActionCenter, toggleTheme, lock, addNotification } = useOSStore();
+  const { 
+    wallpaper, isActionCenterOpen, closeActionCenter, 
+    toggleTheme, lock, addNotification, desktopIcons,
+    createItem, addDesktopIcon
+  } = useOSStore();
 
   const toggleStart = () => setIsStartOpen(prev => !prev);
   const closeStart = () => {
@@ -24,6 +29,52 @@ export default function Desktop() {
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     setContextMenu({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      for (const file of files) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const content = event.target?.result as string;
+          const fileId = createItem({
+            name: file.name,
+            type: 'file',
+            parentId: 'drive-c', // Default to C: for dropped files
+            content: content
+          });
+
+          addDesktopIcon({
+            id: `icon-${fileId}`,
+            name: file.name,
+            icon: file.type.startsWith('image/') ? content : 'icons/notepad.png',
+            type: 'file',
+            fileId: fileId
+          });
+
+          addNotification({
+            title: 'Importation',
+            message: `Fichier "${file.name}" importé avec succès.`,
+            type: 'success'
+          });
+        };
+
+        if (file.type.startsWith('image/')) {
+          reader.readAsDataURL(file);
+        } else {
+          reader.readAsText(file);
+        }
+      }
+    }
   };
 
   // Preload image
@@ -42,6 +93,8 @@ export default function Desktop() {
       className="os-container"
       onClick={closeStart}
       onContextMenu={handleContextMenu}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
       style={{ backgroundColor: '#000' }}
     >
       <motion.div 
@@ -59,8 +112,17 @@ export default function Desktop() {
 
       <DesktopWidgets />
       <Spotlight />
+
+      {/* Desktop Icons Layer */}
+      <div className="desktop-icons-container" style={{ position: 'absolute', inset: 0, padding: '20px', zIndex: 1, pointerEvents: 'none' }}>
+        {desktopIcons.map(icon => (
+          <div key={icon.id} style={{ pointerEvents: 'auto' }}>
+            <DesktopIcon icon={icon} />
+          </div>
+        ))}
+      </div>
       
-      <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%', zIndex: 1 }}>
+      <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%', zIndex: 2 }}>
         <WindowManager />
       </div>
       
@@ -82,7 +144,10 @@ export default function Desktop() {
             <ContextItem label="Changer de thème" onClick={toggleTheme} />
             <ContextItem label="Verrouiller (Win+L)" onClick={lock} />
             <div style={{ height: '1px', background: 'var(--glass-border)', margin: '4px 8px' }} />
-            <ContextItem label="Nouveau dossier" onClick={() => addNotification({ title: 'Système', message: 'Utilisez l\'explorateur pour créer des dossiers.', type: 'info' })} />
+            <ContextItem label="Nouveau dossier" onClick={() => {
+              const id = createItem({ name: 'Nouveau Dossier', type: 'folder', parentId: null });
+              addDesktopIcon({ id: `icon-${id}`, name: 'Nouveau Dossier', icon: 'icons/explorer.png', type: 'folder', fileId: id });
+            }} />
             <ContextItem label="Paramètres" onClick={() => useOSStore.getState().openWindow('settings', 'Settings')} />
           </motion.div>
         )}

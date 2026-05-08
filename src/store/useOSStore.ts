@@ -35,6 +35,17 @@ export interface Notification {
   time: number;
 }
 
+export interface DesktopIcon {
+  id: string;
+  name: string;
+  icon: string;
+  x: number;
+  y: number;
+  type: 'app' | 'file' | 'folder' | 'drive';
+  appId?: string;
+  fileId?: string;
+}
+
 interface OSState {
   isBooting: boolean;
   isLoggedIn: boolean;
@@ -51,7 +62,9 @@ interface OSState {
   activeWindowId: string | null;
   notifications: Notification[];
   fs: VFSItem[];
+  desktopIcons: DesktopIcon[];
   
+  // Actions
   completeBoot: () => void;
   login: () => void;
   logout: () => void;
@@ -74,7 +87,13 @@ interface OSState {
   updateWindowDimensions: (id: string, x: number, y: number, width?: number | string, height?: number | string) => void;
   addNotification: (notif: Omit<Notification, 'id' | 'time'>) => void;
   removeNotification: (id: string) => void;
-  createItem: (item: Omit<VFSItem, 'id' | 'lastModified'>) => void;
+  
+  // Desktop Icon Actions
+  updateIconPosition: (id: string, x: number, y: number) => void;
+  addDesktopIcon: (icon: Omit<DesktopIcon, 'x' | 'y'>) => void;
+
+  // FS Actions
+  createItem: (item: Omit<VFSItem, 'id' | 'lastModified'>) => string;
   deleteItem: (id: string) => void;
   updateFileContent: (id: string, content: string) => void;
   renameItem: (id: string, newName: string) => void;
@@ -87,6 +106,13 @@ const DEFAULT_FS: VFSItem[] = [
   { id: 'root-pics', name: 'Pictures', type: 'folder', parentId: 'drive-c', lastModified: Date.now() },
   { id: 'root-down', name: 'Downloads', type: 'folder', parentId: 'drive-c', lastModified: Date.now() },
   { id: 'welcome-txt', name: 'Welcome.txt', type: 'file', content: 'Welcome to Windows 12!\n\nExploitez la puissance de l\'IA et du VFS.', parentId: 'root-docs', lastModified: Date.now() },
+];
+
+const DEFAULT_ICONS: DesktopIcon[] = [
+  { id: 'icon-pc', name: 'Ce PC', icon: 'icons/explorer.png', x: 20, y: 20, type: 'app', appId: 'explorer' },
+  { id: 'icon-bin', name: 'Corbeille', icon: 'https://img.icons8.com/fluency/512/recycle-bin.png', x: 20, y: 120, type: 'folder' },
+  { id: 'icon-edge', name: 'Edge', icon: 'icons/edge.png', x: 20, y: 220, type: 'app', appId: 'browser' },
+  { id: 'icon-settings', name: 'Settings', icon: 'icons/settings.png', x: 20, y: 320, type: 'app', appId: 'settings' },
 ];
 
 export const useOSStore = create<OSState>()(
@@ -107,6 +133,7 @@ export const useOSStore = create<OSState>()(
       activeWindowId: null,
       notifications: [],
       fs: DEFAULT_FS,
+      desktopIcons: DEFAULT_ICONS,
 
       completeBoot: () => set({ isBooting: false }),
       login: () => set({ isLoggedIn: true, isLocked: false }),
@@ -202,12 +229,32 @@ export const useOSStore = create<OSState>()(
         notifications: state.notifications.filter(n => n.id !== id)
       })),
 
-      createItem: (item) => set((state) => ({
-        fs: [...state.fs, { ...item, id: Math.random().toString(36).substr(2, 9), lastModified: Date.now() }]
+      // Desktop Icon Actions
+      updateIconPosition: (id, x, y) => set((state) => ({
+        desktopIcons: state.desktopIcons.map(icon => icon.id === id ? { ...icon, x, y } : icon)
       })),
 
+      addDesktopIcon: (icon) => set((state) => {
+        // Find empty spot on grid (basic)
+        const x = 20;
+        const y = 20 + (state.desktopIcons.length * 100);
+        return {
+          desktopIcons: [...state.desktopIcons, { ...icon, x, y }]
+        };
+      }),
+
+      // FS Actions
+      createItem: (item) => {
+        const id = Math.random().toString(36).substr(2, 9);
+        set((state) => ({
+          fs: [...state.fs, { ...item, id, lastModified: Date.now() }]
+        }));
+        return id;
+      },
+
       deleteItem: (id) => set((state) => ({
-        fs: state.fs.filter(i => i.id !== id && i.parentId !== id)
+        fs: state.fs.filter(i => i.id !== id && i.parentId !== id),
+        desktopIcons: state.desktopIcons.filter(icon => icon.fileId !== id)
       })),
 
       updateFileContent: (id, content) => set((state) => ({
@@ -219,7 +266,7 @@ export const useOSStore = create<OSState>()(
       }))
     }),
     {
-      name: 'windows12-storage-v6',
+      name: 'windows12-storage-v7',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ 
         theme: state.theme, 
@@ -228,7 +275,8 @@ export const useOSStore = create<OSState>()(
         transparency: state.transparency,
         isLoggedIn: state.isLoggedIn,
         isLocked: state.isLocked,
-        fs: state.fs
+        fs: state.fs,
+        desktopIcons: state.desktopIcons
       }),
     }
   )
