@@ -97,6 +97,9 @@ interface OSState {
   deleteItem: (id: string) => void;
   updateFileContent: (id: string, content: string) => void;
   renameItem: (id: string, newName: string) => void;
+
+  // AI & Automation
+  executeSystemAction: (action: string, params?: any) => void;
 }
 
 const DEFAULT_FS: VFSItem[] = [
@@ -117,7 +120,7 @@ const DEFAULT_ICONS: DesktopIcon[] = [
 
 export const useOSStore = create<OSState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       isBooting: true,
       isLoggedIn: false,
       isLocked: false,
@@ -263,10 +266,42 @@ export const useOSStore = create<OSState>()(
 
       renameItem: (id, name) => set((state) => ({
         fs: state.fs.map(i => i.id === id ? { ...i, name, lastModified: Date.now() } : i)
-      }))
+      })),
+
+      executeSystemAction: (action, params) => {
+        const state = get();
+        switch (action) {
+          case 'set_theme':
+            if ((params === 'dark' || params === 'light') && state.theme !== params) {
+               state.toggleTheme();
+            }
+            break;
+          case 'set_wallpaper':
+            state.setWallpaper(params);
+            break;
+          case 'open_app':
+            state.openWindow(params.id, params.title, params.icon);
+            break;
+          case 'lock':
+            state.lock();
+            break;
+          case 'notify':
+            state.addNotification({ title: params.title || 'Copilot', message: params.message, type: params.type || 'info' });
+            break;
+          case 'create_file':
+            const id = state.createItem({ name: params.name, type: 'file', parentId: 'root-docs', content: params.content || '' });
+            state.addDesktopIcon({ id: `icon-${id}`, name: params.name, icon: 'icons/notepad.png', type: 'file', fileId: id });
+            break;
+          case 'set_accent':
+            state.setAccentColor(params);
+            break;
+          default:
+            console.warn('Action Copilot inconnue:', action);
+        }
+      }
     }),
     {
-      name: 'windows12-storage-v10',
+      name: 'windows12-storage-v11',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ 
         theme: state.theme, 
