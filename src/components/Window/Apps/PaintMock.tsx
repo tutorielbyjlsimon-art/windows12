@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { Palette, Eraser, Square, Circle, Download, Trash2 } from 'lucide-react';
+import { Palette, Eraser, Download, Trash2 } from 'lucide-react';
 
 export default function PaintMock() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [color, setColor] = useState('#0078d4');
   const [brushSize, setBrushSize] = useState(5);
-  const [tool, setTool] = useState<'brush' | 'eraser' | 'rect' | 'circle'>('brush');
+  const [tool, setTool] = useState<'brush' | 'eraser'>('brush');
 
   useEffect(() => {
     const canvas = canvasRef.current;

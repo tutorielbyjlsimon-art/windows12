@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, ArrowLeft, ArrowRight, RotateCw, Home, ShieldCheck, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ArrowRight, RotateCw, ShieldCheck, ExternalLink } from 'lucide-react';
 
 export default function BrowserMock() {
   const [url, setUrl] = useState('https://www.wikipedia.org');

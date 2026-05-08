@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOSStore } from '../../store/useOSStore';
 import type { AppWindow } from '../../store/useOSStore';
-import { Minus, Square, X, Layout } from 'lucide-react';
+import { Minus, Square, X } from 'lucide-react';
 import BrowserMock from './Apps/BrowserMock';
 import SettingsMock from './Apps/SettingsMock';
 import WeatherMock from './Apps/WeatherMock';
